@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 7 — Analyzing Your Observability Data · Dynatrace Essentials Notes</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+(function(){
+  var r=document.documentElement;
+  try{var t=localStorage.getItem('theme'); if(t) r.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){
+    var b=document.querySelector('.theme-btn'); if(!b) return;
+    b.addEventListener('click',function(){
+      var dark = r.getAttribute('data-theme')==='dark' ||
+        (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var n = dark ? 'light' : 'dark'; r.setAttribute('data-theme',n);
+      try{localStorage.setItem('theme',n);}catch(e){}
+    });
+  });
+})();
+</script>
+
+</head>
+<body>
+<div class="layout">
+<nav class="side" aria-label="Lessons">
+<div class="brand">Dynatrace Essentials Notes</div>
+<ol>
+<li><a href="index.html"><span class="n"></span><span>Home</span></a></li>
+<li><a href="01-introduction-to-dynatrace.html"><span class="n">1</span><span>An Introduction to Dynatrace</span></a></li>
+<li><a href="02-dynatrace-architecture.html"><span class="n">2</span><span>Dynatrace Architecture</span></a></li>
+<li><a href="03-dynatrace-topology.html"><span class="n">3</span><span>Dynatrace Topology (Smartscape)</span></a></li>
+<li><a href="04-digital-experience-monitoring.html"><span class="n">4</span><span>Digital Experience Monitoring (DEM)</span></a></li>
+<li><a href="05-smart-organization.html"><span class="n">5</span><span>Smart Organization</span></a></li>
+<li><a href="06-exploring-problems.html"><span class="n">6</span><span>Exploring Problems</span></a></li>
+<li><a href="07-analyzing-observability-data.html" class="active"><span class="n">7</span><span>Analyzing Your Observability Data</span></a></li>
+<li><a href="08-extending-dynatrace.html"><span class="n">8</span><span>Extending Dynatrace</span></a></li>
+<li><a href="09-cram-sheet-and-final-review.html"><span class="n">★</span><span>Cram Sheet and Final Review</span></a></li>
+</ol>
+</nav>
+<main>
+<div class="topbar"><button class="theme-btn" type="button">Toggle theme</button></div>
+<h1 id="lesson-7-analyzing-your-observability-data">Lesson 7 — Analyzing Your Observability Data</h1>
+<h2 id="learning-objectives">Learning objectives</h2>
+<ul>
+<li>Identify the features available for analyzing data in Dynatrace (Dashboards, Notebooks, DQL, Logs and Traces apps; Data Explorer, multidimensional analysis, session segmentation are also mentioned)</li>
+<li>Create and configure <strong>Dashboards</strong> and <strong>Notebooks</strong></li>
+</ul>
+<hr />
+<h2 id="key-topics-and-explanations">Key topics and explanations</h2>
+<h3 id="1-the-scenario-cyber-monday-prep">1. The scenario: Cyber Monday prep</h3>
+<p>The store needs to (a) watch performance live during the rush and (b) look back afterward. Plan: <strong>Dashboards</strong> for live visualization, <strong>DQL</strong> for custom views, <strong>Notebooks</strong> to freeze a historical snapshot, plus Logs, Traces, session segmentation, and multidimensional analysis (MDA) for deeper digging.</p>
+<h3 id="2-dashboards">2. Dashboards</h3>
+<ul>
+<li>Turn raw data into <strong>visual insights</strong>: spot trends, monitor performance, share findings.</li>
+<li>Built from <strong>tiles</strong> (pre-made or custom): drag and drop, then configure <strong>filters, time frames, visualizations, titles</strong>.</li>
+<li>In the Dashboards app, <strong>every tile is powered by a DQL query</strong>, even if you don't see it.</li>
+<li><strong>Use for real-time views.</strong></li>
+</ul>
+<p><strong>Sharing and scheduling:</strong></p>
+<ul>
+<li>Share with individuals or groups.</li>
+<li>Set a <strong>default time frame</strong> so the dashboard always opens in the right context.</li>
+<li>Dashboards can be shared with people <strong>who don't have a Dynatrace account</strong> (no login required).</li>
+</ul>
+<p><strong>Editing:</strong> update tile titles, change chart formats, add/remove filters, rename the dashboard.</p>
+<h3 id="3-dql-dynatrace-query-language">3. DQL (Dynatrace Query Language)</h3>
+<ul>
+<li>Used by the <strong>Dashboards</strong> and <strong>Notebooks</strong> apps to pull data from <strong>Grail</strong>.</li>
+<li><strong>Benefits:</strong> faster on large datasets; more flexible than the Data Explorer.</li>
+<li>Has a learning curve, but <strong>you don't need to be a developer</strong> (or an admin) to use it.</li>
+</ul>
+<p><strong>Structure:</strong> a sequence of <strong>steps (commands) joined by pipes <code>|</code></strong>, each refining the previous result:</p>
+<pre><code>fetch logs
+| filter content contains &quot;warning&quot;
+</code></pre>
+<p>Read it as: "Fetch the logs, <em>then</em> keep only those containing 'warning'."</p>
+<p><strong>Help for learners:</strong> autocomplete, templates, converting Data Explorer charts into DQL, and the Logs/Traces apps can generate DQL for you. The Dynatrace Playground is available for practice.</p>
+<p><strong>Licensing note:</strong> the wrap-up states that running DQL queries <strong>affects licensing</strong> (querying consumes capacity).</p>
+<h4 id="supplementary-dql-patterns-beyond-the-course-text-check-syntax-in-the-playground">Supplementary DQL patterns (beyond the course text; check syntax in the Playground)</h4>
+<pre><code>// Count errors per host in the selected timeframe
+fetch logs
+| filter loglevel == &quot;ERROR&quot;
+| summarize errors = count(), by: {dt.entity.host}
+| sort errors desc
+| limit 10
+</code></pre>
+<pre><code>// Most recent log lines mentioning &quot;timeout&quot;
+fetch logs
+| filter contains(content, &quot;timeout&quot;)
+| sort timestamp desc
+| limit 50
+</code></pre>
+<pre><code>// CPU usage time series per host
+timeseries avg(dt.host.cpu.usage), by: {dt.entity.host}
+</code></pre>
+<p>Core verbs to recognize: <code>fetch</code> (get a data type), <code>filter</code> (keep matching records), <code>summarize</code> (aggregate), <code>sort</code>, <code>limit</code>, <code>fields</code> (choose columns), <code>timeseries</code> (metric over time).</p>
+<h3 id="4-notebooks">4. Notebooks</h3>
+<ul>
+<li>"Dashboards with memory": they <strong>don't auto-refresh</strong>; they <strong>capture data at a point in time</strong>.</li>
+<li>Ideal for <strong>historical analysis</strong> — e.g., freeze Black Friday/Cyber Monday data to compare year over year.</li>
+<li><strong>Caution:</strong> don't re-run the queries in that notebook later, or the frozen snapshot may be replaced/lost.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Dashboards</th>
+<th>Notebooks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Purpose</td>
+<td>Live, real-time monitoring</td>
+<td>Investigation and historical snapshots</td>
+</tr>
+<tr>
+<td>Refresh</td>
+<td>Auto-refreshes</td>
+<td>Static until you re-run</td>
+</tr>
+<tr>
+<td>Typical use</td>
+<td>NOC wall screen, team status</td>
+<td>Post-incident review, event retrospectives</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-logs-and-traces-apps">5. Logs and Traces apps</h3>
+<ul>
+<li>Dedicated apps to explore <strong>raw</strong> log and trace data from Grail.</li>
+<li>Filter by <strong>log level</strong>, <strong>keywords/phrases</strong>, and <strong>security context</strong> (which can restrict access by role).</li>
+<li>Both can <strong>generate DQL</strong> for you — a good way to learn.</li>
+</ul>
+<hr />
+<h2 id="definitions-glossary">Definitions (glossary)</h2>
+<ul>
+<li><strong>Dashboard:</strong> A tile-based, real-time visualization of data; tiles run DQL.</li>
+<li><strong>Tile:</strong> A single visualization or element on a dashboard.</li>
+<li><strong>DQL:</strong> Dynatrace Query Language; piped commands that query Grail.</li>
+<li><strong>Notebook:</strong> An analysis document that stores results as of when queries ran.</li>
+<li><strong>Logs app / Traces app:</strong> Purpose-built apps to filter and explore raw logs/traces.</li>
+<li><strong>Security context:</strong> A log attribute that can be used to limit who can see data.</li>
+<li><strong>Data Explorer:</strong> The classic charting tool; its charts can be converted to DQL.</li>
+</ul>
+<hr />
+<h2 id="practical-examples">Practical examples</h2>
+<ol>
+<li><strong>Cyber Monday dashboard:</strong> tiles for checkout response time, error rate, active users, Apdex, and CPU of the checkout hosts, with a default time frame of "last 2 hours," shared with the on-call group.</li>
+<li><strong>Post-event notebook:</strong> after Cyber Monday, run queries for orders/minute, peak response time, and top errors, then save the notebook as "Cyber Monday 2026" and leave the queries un-rerun for next year's comparison.</li>
+<li><strong>Learning DQL from the Logs app:</strong> filter the Logs app to <code>ERROR</code> level and "payment," then open the generated DQL to see how <code>fetch logs | filter …</code> is written.</li>
+<li><strong>Quick question in DQL:</strong> "Which hosts logged the most warnings today?" → fetch logs, filter for warning, summarize count by host, sort descending.</li>
+</ol>
+<hr />
+<h2 id="knowledge-check-concepts">Knowledge-check concepts</h2>
+<ul>
+<li>Status of Dashboard Classic vs. the new Dashboards app (check current docs; the course mentions both exist)</li>
+<li>Which apps are designed for exploring raw logs and traces (<strong>Logs</strong> and <strong>Traces</strong> apps)</li>
+<li>What you can do when editing dashboards (modify chart formats, tile titles, filters)</li>
+<li>How Notebooks differ from Dashboards (fixed snapshots at a point in time)</li>
+<li>DQL facts: uses commands like <code>fetch</code> and <code>filter</code>; communicates with Grail; <em>not</em> admin-only; <em>can</em> be used in dashboards</li>
+</ul>
+<hr />
+<h2 id="review-questions">Review questions</h2>
+<ol>
+<li>When would you choose a dashboard over a notebook, and vice versa?</li>
+<li>What powers every tile in the new Dashboards app?</li>
+<li>Can you share a dashboard with someone who has no Dynatrace account?</li>
+<li>Name four things you can change when editing a dashboard.</li>
+<li>What symbol connects DQL steps, and what does each step operate on?</li>
+<li>Write a DQL query that fetches logs and keeps only those containing "error".</li>
+<li>Do you need admin rights to use DQL? Can DQL be used in dashboards?</li>
+<li>What's the risk of re-running queries in a historical notebook?</li>
+<li>Name three ways to filter in the Logs app.</li>
+<li>How can a beginner get DQL written for them?</li>
+<li>Does querying data with DQL have licensing implications?</li>
+</ol>
+<details class="answers"><summary>Show answers</summary>
+<ol>
+<li>Dashboard for live, auto-refreshing monitoring; notebook for investigation and preserving a point-in-time snapshot.</li>
+<li>A DQL query.</li>
+<li>Yes.</li>
+<li>Tile titles, chart formats, filters, dashboard name (also default time frame).</li>
+<li>The pipe <code>|</code>; each step works on the output of the previous step.</li>
+<li><code>fetch logs | filter content contains "error"</code> (or <code>filter contains(content, "error")</code>).</li>
+<li>No; yes.</li>
+<li>The frozen data may be replaced or lost.</li>
+<li>Log level, keywords/phrases, security context.</li>
+<li>Autocomplete/templates, converting Data Explorer charts, or letting the Logs/Traces apps generate queries.</li>
+<li>Yes, per the course wrap-up.</li>
+</ol>
+</details>
+
+<div class="pager"><a href="06-exploring-problems.html"><small>Previous</small>Exploring Problems</a><a href="08-extending-dynatrace.html" style="text-align:right"><small>Next</small>Extending Dynatrace</a></div>
+<footer>Original study notes based on the Dynatrace University course "Dynatrace Essentials".</footer>
+</main>
+</div>
+</body>
+</html>

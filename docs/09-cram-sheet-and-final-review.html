@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cram Sheet and Final Review · Dynatrace Essentials Notes</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+(function(){
+  var r=document.documentElement;
+  try{var t=localStorage.getItem('theme'); if(t) r.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){
+    var b=document.querySelector('.theme-btn'); if(!b) return;
+    b.addEventListener('click',function(){
+      var dark = r.getAttribute('data-theme')==='dark' ||
+        (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var n = dark ? 'light' : 'dark'; r.setAttribute('data-theme',n);
+      try{localStorage.setItem('theme',n);}catch(e){}
+    });
+  });
+})();
+</script>
+
+</head>
+<body>
+<div class="layout">
+<nav class="side" aria-label="Lessons">
+<div class="brand">Dynatrace Essentials Notes</div>
+<ol>
+<li><a href="index.html"><span class="n"></span><span>Home</span></a></li>
+<li><a href="01-introduction-to-dynatrace.html"><span class="n">1</span><span>An Introduction to Dynatrace</span></a></li>
+<li><a href="02-dynatrace-architecture.html"><span class="n">2</span><span>Dynatrace Architecture</span></a></li>
+<li><a href="03-dynatrace-topology.html"><span class="n">3</span><span>Dynatrace Topology (Smartscape)</span></a></li>
+<li><a href="04-digital-experience-monitoring.html"><span class="n">4</span><span>Digital Experience Monitoring (DEM)</span></a></li>
+<li><a href="05-smart-organization.html"><span class="n">5</span><span>Smart Organization</span></a></li>
+<li><a href="06-exploring-problems.html"><span class="n">6</span><span>Exploring Problems</span></a></li>
+<li><a href="07-analyzing-observability-data.html"><span class="n">7</span><span>Analyzing Your Observability Data</span></a></li>
+<li><a href="08-extending-dynatrace.html"><span class="n">8</span><span>Extending Dynatrace</span></a></li>
+<li><a href="09-cram-sheet-and-final-review.html" class="active"><span class="n">★</span><span>Cram Sheet and Final Review</span></a></li>
+</ol>
+</nav>
+<main>
+<div class="topbar"><button class="theme-btn" type="button">Toggle theme</button></div>
+<h1 id="cram-sheet-and-final-review">Cram Sheet and Final Review</h1>
+<h2 id="numbers-to-memorize">Numbers to memorize</h2>
+<table>
+<thead>
+<tr>
+<th>Fact</th>
+<th>Value</th>
+<th>Lesson</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apdex — satisfied</td>
+<td>0–3 s</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Apdex — tolerating</td>
+<td>3–15 s</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Apdex — frustrated</td>
+<td>&gt; 15 s <strong>or any error</strong></td>
+<td>4</td>
+</tr>
+<tr>
+<td>Apdex max score</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Session ends after inactivity</td>
+<td>35 min</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Session max duration</td>
+<td>8 hours</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Session max actions</td>
+<td>200 (new session on the 201st)</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Conversion goal shows results after</td>
+<td>~30 min</td>
+<td>4</td>
+</tr>
+<tr>
+<td>New synthetic monitor becomes active in</td>
+<td>15–30 min</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Static threshold confirmation</td>
+<td>~3 breaches in 5 min</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Baseline first available after</td>
+<td>2 hours</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Healthy baseline after</td>
+<td>~1 week</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Baseline deviation to trigger anomaly</td>
+<td>≥ 50% above baseline</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Default bizevents retention</td>
+<td>35 days</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Example log bucket retentions in course</td>
+<td>35 and 100 days</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Smartscape layers</td>
+<td>5</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Problem types</td>
+<td>5</td>
+<td>6</td>
+</tr>
+<tr>
+<td>OneAgent monitoring modes</td>
+<td>3</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Synthetic monitor types</td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Host groups per host</td>
+<td>1</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="lists-to-memorize">Lists to memorize</h2>
+<ul>
+<li><strong>Three pillars:</strong> metrics, logs, traces (+ security, business, deployment events)</li>
+<li><strong>Smartscape layers (top→bottom):</strong> Applications, Services, Processes, Hosts, Data centers</li>
+<li><strong>Monitoring modes:</strong> Full-Stack (host+process+service traces), Infrastructure (host+process), Foundation &amp; Discovery (essential host only)</li>
+<li><strong>Problem types by severity:</strong> Availability &gt; Error &gt; Slowdown &gt; Resource &gt; Custom</li>
+<li><strong>User action types:</strong> Load, XHR, Custom</li>
+<li><strong>Synthetic monitors:</strong> Browser (single page), Browser clickpath (journey), HTTP (endpoint)</li>
+<li><strong>Session end triggers:</strong> 35 min idle, window closed, 8 h, &gt;200 actions, <code>dtrum.endSession()</code></li>
+<li><strong>Buckets control:</strong> retention, access, organization</li>
+<li><strong>Organizing tools:</strong> host groups, naming rules, tags</li>
+<li><strong>Tags used for:</strong> filtering, dashboards, alerting, ownership</li>
+<li><strong>Problem analysis tools:</strong> Failure analysis, Response time hotspots, Distributed traces, Business impact analysis</li>
+<li><strong>Dynatrace Intelligence categories:</strong> causal correlation, seasonal baseline, forecast</li>
+<li><strong>Problem settings:</strong> anomaly detection, alerting profiles, problem notifications, maintenance windows</li>
+<li><strong>Ways to extend:</strong> Hub apps &amp; extensions, cloud integrations, workflows, log ingestion, AppSec, OpenTelemetry, OneAgent SDK, business events, API, Kubernetes Operator</li>
+</ul>
+<h2 id="common-which-one-decisions">Common "which one?" decisions</h2>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Many servers, too many firewall rules</td>
+<td>ActiveGate</td>
+</tr>
+<tr>
+<td>Need traces/code-level data</td>
+<td>Full-Stack mode</td>
+</tr>
+<tr>
+<td>Database server metrics only</td>
+<td>Infrastructure mode</td>
+</tr>
+<tr>
+<td>Kiosk/POS just needs "is it up?"</td>
+<td>Foundation &amp; Discovery</td>
+</tr>
+<tr>
+<td>See SQL statements</td>
+<td>OneAgent on the <strong>calling app server</strong></td>
+</tr>
+<tr>
+<td>Can't install OneAgent on web server but want RUM</td>
+<td>Agentless RUM</td>
+</tr>
+<tr>
+<td>Test site at 2 a.m. with no users</td>
+<td>Synthetic monitor</td>
+</tr>
+<tr>
+<td>Test internal-only app with synthetics</td>
+<td>Private synthetic location (ActiveGate) or allowlist Dynatrace IPs</td>
+</tr>
+<tr>
+<td>Custom Apdex for one action</td>
+<td>Mark it a key user action</td>
+</tr>
+<tr>
+<td>Split prod vs. non-prod identical processes</td>
+<td>Host groups (+ restart processes)</td>
+</tr>
+<tr>
+<td>Make <code>svc-1234</code> readable</td>
+<td>Naming rule</td>
+</tr>
+<tr>
+<td>Live wall screen</td>
+<td>Dashboard</td>
+</tr>
+<tr>
+<td>Freeze Black Friday data</td>
+<td>Notebook</td>
+</tr>
+<tr>
+<td>Suppress alerts during patching</td>
+<td>Maintenance window</td>
+</tr>
+<tr>
+<td>Send data to Power BI</td>
+<td>Dynatrace API</td>
+</tr>
+<tr>
+<td>Unsupported technology traces</td>
+<td>OpenTelemetry</td>
+</tr>
+<tr>
+<td>Capture cart total on a OneAgent host</td>
+<td>OneAgent SDK (or a business event from logs/spans)</td>
+</tr>
+<tr>
+<td>Extra Tomcat/Kafka metrics</td>
+<td>Hub technology extension</td>
+</tr>
+<tr>
+<td>AWS overview without agents</td>
+<td>Cloud integration</td>
+</tr>
+<tr>
+<td>Monitor Kubernetes</td>
+<td>Dynatrace Operator</td>
+</tr>
+</tbody>
+</table>
+<h2 id="easily-confused-pairs">Easily-confused pairs</h2>
+<ul>
+<li><strong>Monitoring vs. observability:</strong> symptoms vs. meaningful, actionable context.</li>
+<li><strong>Application (IT) vs. application (Dynatrace):</strong> any business software vs. a user-facing web/mobile front end.</li>
+<li><strong>Dynatrace App vs. monitored application:</strong> an app <em>inside</em> the platform vs. the thing you monitor.</li>
+<li><strong>Process vs. process group:</strong> one running program vs. same-function processes across hosts.</li>
+<li><strong>Process vs. service:</strong> the employee vs. the task done on request.</li>
+<li><strong>Load vs. XHR action:</strong> full page load vs. partial in-page update.</li>
+<li><strong>RUM vs. synthetics:</strong> real vs. simulated users.</li>
+<li><strong>Session Replay vs. video:</strong> reconstruction from data vs. screen recording (Session Replay is <em>not</em> video).</li>
+<li><strong>Static threshold vs. baseline:</strong> fixed value vs. learned normal.</li>
+<li><strong>Alerting profile vs. problem notification:</strong> <em>which</em> problems vs. <em>how</em> they're sent.</li>
+<li><strong>Dashboard vs. notebook:</strong> live vs. snapshot.</li>
+<li><strong>OpenTelemetry vs. OneAgent SDK:</strong> open standard / works without OneAgent vs. extra data on OneAgent hosts.</li>
+<li><strong>Dynatrace Intelligence vs. Davis AI:</strong> same AI engine, two names in the course.</li>
+</ul>
+<hr />
+<h2 id="40-question-mixed-final-review">40-question mixed final review</h2>
+<p><em>(Original questions. Answers at the end.)</em></p>
+<ol>
+<li>What is the main job of OneAgent?</li>
+<li>Why does an ActiveGate reduce firewall complexity?</li>
+<li>Which pillar shows where time was spent in a single request?</li>
+<li>What does "tool consolidation" save besides license costs?</li>
+<li>What does SaaS mean for where Dynatrace data is processed?</li>
+<li>Grail uses what processing approach to answer large queries quickly?</li>
+<li>Which three things do buckets control?</li>
+<li>Which OneAgent mode is the recommended default?</li>
+<li>Which mode would you choose for a database host whose queries are already captured from the app servers?</li>
+<li>Name the Smartscape layer between Services and Hosts.</li>
+<li>Why might a service be missing from a 15-minute view?</li>
+<li>Where do you install OneAgent to see database queries?</li>
+<li>What happens to existing "My Web Application" traffic after a new detection rule?</li>
+<li>Which action type is a filter that updates a product list without reloading?</li>
+<li>A page loads in 4 s. Apdex rating?</li>
+<li>A page returns a 500 error in 0.2 s. Apdex rating?</li>
+<li>What's required before giving a single action a custom Apdex threshold?</li>
+<li>What is "visually complete"?</li>
+<li>Give two reasons to use Agentless RUM.</li>
+<li>What does mobile RUM capture that web RUM doesn't emphasize?</li>
+<li>Does closing a browser tab end a user session?</li>
+<li>What happens on a user's 201st action?</li>
+<li>Are bounce sessions usually licensed?</li>
+<li>Which synthetic monitor needs a Chrome recorder extension?</li>
+<li>Do synthetics require OneAgent?</li>
+<li>Where do you store synthetic login credentials securely?</li>
+<li>What is always masked in Session Replay?</li>
+<li>When are host groups assigned?</li>
+<li>What must happen after assigning host groups for process groups to split?</li>
+<li>List four uses of tags.</li>
+<li>Does Dynatrace open a new problem for every anomaly?</li>
+<li>A service baseline is 2 s. At roughly what sustained value is an anomaly flagged?</li>
+<li>Which problem type is most severe?</li>
+<li>What does Dynatrace use to group related anomalies and avoid alert storms?</li>
+<li>First tool for a slowdown? First tool for an error spike?</li>
+<li>What's a maintenance window for?</li>
+<li>What connects steps in a DQL query?</li>
+<li>Which app captures point-in-time data and doesn't auto-refresh?</li>
+<li>Does Dynatrace auto-activate all Hub extensions when OneAgent is installed?</li>
+<li>Which Kubernetes component deploys OneAgent and reports status?</li>
+</ol>
+<details class="answers"><summary>Show answers</summary>
+<ol>
+<li>Automatically collect logs, metrics, traces, events from the host and send them to Dynatrace.</li>
+<li>Many OneAgents send to the ActiveGate; only it needs a path out to Dynatrace (one-way, encrypted, routed).</li>
+<li>Traces.</li>
+<li>Time and effort: fewer installs, configs, updates, interfaces to learn and switch between.</li>
+<li>In Dynatrace's cloud, not on your machines.</li>
+<li>Massively parallel processing (many helper servers at once).</li>
+<li>Retention, access, organization.</li>
+<li>Full-Stack.</li>
+<li>Infrastructure mode.</li>
+<li>Processes.</li>
+<li>It received no requests in that window.</li>
+<li>On the application server making the calls.</li>
+<li>It stays in "My Web Application"; rules apply to new traffic only.</li>
+<li>XHR action.</li>
+<li>Tolerating.</li>
+<li>Frustrated.</li>
+<li>Mark it as a key user action.</li>
+<li>When all content visible on screen has loaded.</li>
+<li>Any two: no server access; tech doesn't support injection; security policy forbids OneAgent.</li>
+<li>App crashes and touch interactions.</li>
+<li>No — closing the browser window does.</li>
+<li>A new session starts.</li>
+<li>Usually not.</li>
+<li>Browser clickpath.</li>
+<li>No.</li>
+<li>The credential vault.</li>
+<li>Passwords.</li>
+<li>During OneAgent installation.</li>
+<li>The processes must restart.</li>
+<li>Filtering, dashboards, alerting, ownership.</li>
+<li>No — related anomalies attach to an existing problem.</li>
+<li>Above 3 s (50% over baseline).</li>
+<li>Availability.</li>
+<li>Smartscape topology (via Dynatrace Intelligence / Davis AI).</li>
+<li>Response Time Hotspots; Failure Analysis.</li>
+<li>Suppress alerts/synthetics during planned downtime.</li>
+<li>The pipe <code>|</code>.</li>
+<li>Notebooks.</li>
+<li>No.</li>
+<li>The Dynatrace Operator.</li>
+</ol>
+</details>
+
+<div class="pager"><a href="08-extending-dynatrace.html"><small>Previous</small>Extending Dynatrace</a><span></span></div>
+<footer>Original study notes based on the Dynatrace University course "Dynatrace Essentials".</footer>
+</main>
+</div>
+</body>
+</html>

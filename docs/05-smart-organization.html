@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 5 — Smart Organization · Dynatrace Essentials Notes</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+(function(){
+  var r=document.documentElement;
+  try{var t=localStorage.getItem('theme'); if(t) r.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){
+    var b=document.querySelector('.theme-btn'); if(!b) return;
+    b.addEventListener('click',function(){
+      var dark = r.getAttribute('data-theme')==='dark' ||
+        (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var n = dark ? 'light' : 'dark'; r.setAttribute('data-theme',n);
+      try{localStorage.setItem('theme',n);}catch(e){}
+    });
+  });
+})();
+</script>
+
+</head>
+<body>
+<div class="layout">
+<nav class="side" aria-label="Lessons">
+<div class="brand">Dynatrace Essentials Notes</div>
+<ol>
+<li><a href="index.html"><span class="n"></span><span>Home</span></a></li>
+<li><a href="01-introduction-to-dynatrace.html"><span class="n">1</span><span>An Introduction to Dynatrace</span></a></li>
+<li><a href="02-dynatrace-architecture.html"><span class="n">2</span><span>Dynatrace Architecture</span></a></li>
+<li><a href="03-dynatrace-topology.html"><span class="n">3</span><span>Dynatrace Topology (Smartscape)</span></a></li>
+<li><a href="04-digital-experience-monitoring.html"><span class="n">4</span><span>Digital Experience Monitoring (DEM)</span></a></li>
+<li><a href="05-smart-organization.html" class="active"><span class="n">5</span><span>Smart Organization</span></a></li>
+<li><a href="06-exploring-problems.html"><span class="n">6</span><span>Exploring Problems</span></a></li>
+<li><a href="07-analyzing-observability-data.html"><span class="n">7</span><span>Analyzing Your Observability Data</span></a></li>
+<li><a href="08-extending-dynatrace.html"><span class="n">8</span><span>Extending Dynatrace</span></a></li>
+<li><a href="09-cram-sheet-and-final-review.html"><span class="n">★</span><span>Cram Sheet and Final Review</span></a></li>
+</ol>
+</nav>
+<main>
+<div class="topbar"><button class="theme-btn" type="button">Toggle theme</button></div>
+<h1 id="lesson-5-smart-organization">Lesson 5 — Smart Organization</h1>
+<h2 id="learning-objectives">Learning objectives</h2>
+<ul>
+<li>Explain the concepts and functions of <strong>tags</strong>, <strong>host groups</strong>, <strong>process group detection</strong>, and <strong>naming rules</strong></li>
+<li>Apply these tools to organize resources and improve visibility in a monitoring setup</li>
+</ul>
+<hr />
+<h2 id="key-topics-and-explanations">Key topics and explanations</h2>
+<h3 id="1-why-organize-at-all">1. Why organize at all?</h3>
+<p>With two hosts you can just search. Real enterprise environments have <strong>thousands of hosts, tens of thousands of processes, and hundreds of thousands of services</strong>, often with cryptic names like <code>svc-1234</code>, <code>host-temp-9</code>, <code>frontend-test-a9z</code>. Without structure, finding anything is like digging through a junk drawer.</p>
+<p><strong>Grocery-store analogy:</strong> pasta sauce doesn't belong in the pet-food aisle. Categories make shopping fast; organization makes Dynatrace fast.</p>
+<p><strong>Payoffs:</strong> quick filtering (e.g., search by application ID and see only its hosts/processes/services), more trust in the data, and more efficient <strong>dashboards, alerting, and analysis</strong>.</p>
+<h3 id="2-the-three-core-organizing-tools">2. The three core organizing tools</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose (one line)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Host groups</strong></td>
+<td>Group hosts that serve a similar role/function</td>
+</tr>
+<tr>
+<td><strong>Naming rules</strong></td>
+<td>Customize how entities are <em>displayed</em></td>
+</tr>
+<tr>
+<td><strong>Tags</strong></td>
+<td>Label entities for filtering, grouping, and management</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-host-groups">3. Host groups</h3>
+<p>Group multiple hosts that share a role or function (same team, same application, same environment).</p>
+<p><strong>Why they matter:</strong></p>
+<ul>
+<li><strong>Manage settings for the whole group at once</strong> instead of host by host</li>
+<li>Help Dynatrace <strong>separate or group processes more accurately</strong> (process group detection)</li>
+<li>Usable later in <strong>tagging and filtering</strong></li>
+</ul>
+<p><strong>Worked scenario (from the lesson):</strong></p>
+<ol>
+<li>The Astroshop Frontend team has 10 hosts: 5 production, 5 non-production, running identical processes.</li>
+<li>Because the processes are identical, Dynatrace merges them into <strong>one process group</strong> — prod and non-prod data are mixed.</li>
+<li>Assign host groups <code>Astroshop-Frontend-Production</code> and <code>Astroshop-Frontend-NonProduction</code>.</li>
+<li><strong>After the processes restart</strong>, Dynatrace splits them into separate process groups per environment.</li>
+</ol>
+<p><strong>Rules to remember:</strong></p>
+<ul>
+<li>A host belongs to <strong>only one</strong> host group.</li>
+<li>Host groups are defined <strong>during OneAgent installation</strong>.</li>
+<li>Changing a host group typically means <strong>reinstalling OneAgent</strong> with the new group name; advanced users can use command-line tooling (<strong><code>oneagentctl</code></strong>).</li>
+<li>Processes must <strong>restart</strong> for new process-group separation to take effect.</li>
+</ul>
+<h3 id="4-naming-rules">4. Naming rules</h3>
+<p>Customize <strong>display names</strong> of entities so dashboards and search results are readable at a glance (e.g., <code>svc-12345</code> → <code>OnlineBoutique-LoginService</code>).</p>
+<p>Types covered:</p>
+<ul>
+<li><strong>Host naming rules</strong></li>
+<li><strong>Process group naming rules</strong></li>
+<li><strong>Service naming rules</strong></li>
+<li><strong>Request naming rules</strong> (clearer names for key business transactions)</li>
+</ul>
+<p>Naming rules change how things are <em>shown</em>; they don't change what data is collected.</p>
+<h3 id="5-tags">5. Tags</h3>
+<p>Labels you can apply to nearly any entity — hosts, services, applications, and more. Used to:</p>
+<ul>
+<li><strong>Filter data</strong></li>
+<li><strong>Build dashboards</strong></li>
+<li><strong>Set alerting conditions</strong></li>
+<li><strong>Assign ownership</strong></li>
+</ul>
+<p>Tags are often key–value pairs, e.g., <code>App: Astroshop</code>, <code>Environment: Production</code>.</p>
+<p><strong>Demo takeaway:</strong> a services list with <strong>245</strong> entries narrowed to <strong>11</strong> after applying an <code>Astroshop</code> application tag filter.</p>
+<hr />
+<h2 id="definitions-glossary">Definitions (glossary)</h2>
+<ul>
+<li><strong>Host group:</strong> A named group of hosts sharing a role; assigned at OneAgent install; one per host.</li>
+<li><strong>Process group detection:</strong> How Dynatrace decides which processes belong in the same process group; influenced by host groups.</li>
+<li><strong>Naming rule:</strong> A rule that sets a readable display name for hosts, process groups, services, or requests.</li>
+<li><strong>Tag:</strong> A label (often key:value) applied to entities for filtering, dashboards, alerting, and ownership.</li>
+<li><strong>oneagentctl:</strong> OneAgent command-line tool, usable to change settings like host group without full reinstall.</li>
+</ul>
+<hr />
+<h2 id="practical-examples">Practical examples</h2>
+<ol>
+<li><strong>Environment split:</strong> Payment API runs identically in prod and staging. Install OneAgent on prod hosts with host group <code>payments-prod</code> and on staging with <code>payments-staging</code>; restart the services; prod and staging now appear as separate process groups and alerts can target prod only.</li>
+<li><strong>Naming cleanup:</strong> A Kubernetes workload shows as <code>svc-9876</code>. A service naming rule renames it <code>Astroshop-CheckoutService</code> so on-call engineers recognize it instantly.</li>
+<li><strong>Tag-driven alerting and ownership:</strong> Tag everything for the checkout flow <code>Team: Checkout</code> and <code>Tier: Critical</code>. Route problems tagged <code>Team: Checkout</code> to that team, and build a dashboard filtered to <code>Tier: Critical</code>.</li>
+<li><strong>Choosing the right tool:</strong>
+   - "I want to change settings for all 40 web servers at once" → host group
+   - "This service name is meaningless" → naming rule
+   - "I want a dashboard of only production assets owned by Team A" → tags</li>
+</ol>
+<hr />
+<h2 id="knowledge-check-concepts">Knowledge-check concepts</h2>
+<ul>
+<li>Why organization matters as environments grow (easier filtering, searching, managing)</li>
+<li>Purpose of a host group (manage settings for hosts sharing a role/function)</li>
+<li>Purpose of tags (label entities for filtering, dashboards, alerting)</li>
+<li>Benefit of naming rules (easier recognition of services, hosts, applications)</li>
+<li>When to define host groups (during OneAgent installation)</li>
+</ul>
+<hr />
+<h2 id="review-questions">Review questions</h2>
+<ol>
+<li>Name the three main organizing tools and give one sentence on each.</li>
+<li>Why did Dynatrace merge production and non-production processes in the Astroshop example?</li>
+<li>What two steps fixed the merged process group?</li>
+<li>How many host groups can one host belong to?</li>
+<li>When is the best time to assign a host group, and how do you change it later?</li>
+<li>Do naming rules change what data is collected?</li>
+<li>List four things tags are used for.</li>
+<li>Give an example of a key:value tag pair for environment and one for ownership.</li>
+<li>True or false: organizing your environment automatically improves application performance.</li>
+</ol>
+<details class="answers"><summary>Show answers</summary>
+<ol>
+<li>Host groups (group hosts with a shared role, manage them together); naming rules (readable display names); tags (labels for filtering, dashboards, alerting, ownership).</li>
+<li>The processes were identical, so process group detection treated them as the same group.</li>
+<li>Assign separate host groups to prod and non-prod hosts; restart the processes.</li>
+<li>One.</li>
+<li>During OneAgent installation; later by reinstalling OneAgent with the new group or using oneagentctl.</li>
+<li>No — only how entities are displayed.</li>
+<li>Filtering, dashboards, alerting conditions, ownership.</li>
+<li><code>Environment: Production</code>; <code>Owner: TeamCheckout</code> (any similar).</li>
+<li>False — it improves findability and management, not app performance.</li>
+</ol>
+</details>
+
+<div class="pager"><a href="04-digital-experience-monitoring.html"><small>Previous</small>Digital Experience Monitoring (DEM)</a><a href="06-exploring-problems.html" style="text-align:right"><small>Next</small>Exploring Problems</a></div>
+<footer>Original study notes based on the Dynatrace University course "Dynatrace Essentials".</footer>
+</main>
+</div>
+</body>
+</html>

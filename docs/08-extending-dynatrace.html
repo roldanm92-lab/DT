@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 8 — Extending Dynatrace · Dynatrace Essentials Notes</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+(function(){
+  var r=document.documentElement;
+  try{var t=localStorage.getItem('theme'); if(t) r.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){
+    var b=document.querySelector('.theme-btn'); if(!b) return;
+    b.addEventListener('click',function(){
+      var dark = r.getAttribute('data-theme')==='dark' ||
+        (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var n = dark ? 'light' : 'dark'; r.setAttribute('data-theme',n);
+      try{localStorage.setItem('theme',n);}catch(e){}
+    });
+  });
+})();
+</script>
+
+</head>
+<body>
+<div class="layout">
+<nav class="side" aria-label="Lessons">
+<div class="brand">Dynatrace Essentials Notes</div>
+<ol>
+<li><a href="index.html"><span class="n"></span><span>Home</span></a></li>
+<li><a href="01-introduction-to-dynatrace.html"><span class="n">1</span><span>An Introduction to Dynatrace</span></a></li>
+<li><a href="02-dynatrace-architecture.html"><span class="n">2</span><span>Dynatrace Architecture</span></a></li>
+<li><a href="03-dynatrace-topology.html"><span class="n">3</span><span>Dynatrace Topology (Smartscape)</span></a></li>
+<li><a href="04-digital-experience-monitoring.html"><span class="n">4</span><span>Digital Experience Monitoring (DEM)</span></a></li>
+<li><a href="05-smart-organization.html"><span class="n">5</span><span>Smart Organization</span></a></li>
+<li><a href="06-exploring-problems.html"><span class="n">6</span><span>Exploring Problems</span></a></li>
+<li><a href="07-analyzing-observability-data.html"><span class="n">7</span><span>Analyzing Your Observability Data</span></a></li>
+<li><a href="08-extending-dynatrace.html" class="active"><span class="n">8</span><span>Extending Dynatrace</span></a></li>
+<li><a href="09-cram-sheet-and-final-review.html"><span class="n">★</span><span>Cram Sheet and Final Review</span></a></li>
+</ol>
+</nav>
+<main>
+<div class="topbar"><button class="theme-btn" type="button">Toggle theme</button></div>
+<h1 id="lesson-8-extending-dynatrace">Lesson 8 — Extending Dynatrace</h1>
+<h2 id="learning-objectives">Learning objectives</h2>
+<ul>
+<li>Identify the options available to <strong>extend</strong> Dynatrace</li>
+<li>Explain what each option offers and <strong>when</strong> to use it: Hub apps and extensions, cloud integrations, workflows, log ingestion, application security, OpenTelemetry, OneAgent SDK, business events, the API, and Kubernetes monitoring</li>
+</ul>
+<hr />
+<h2 id="key-topics-and-explanations">Key topics and explanations</h2>
+<h3 id="1-why-extend">1. Why extend?</h3>
+<p>Like a smartphone, Dynatrace does a lot out of the box (RUM, metrics, logs, traces), but no two customers use the same technologies or need the same depth. <strong>Not everything is on by default</strong> — turning everything on would collect unneeded data and clutter the UI. You <strong>enable what you need, when you need it.</strong> You adapt the tool to your business, not the other way round.</p>
+<h3 id="2-dynatrace-hub-the-app-store">2. Dynatrace Hub — the "app store"</h3>
+<p>Browse and activate:</p>
+<ul>
+<li><strong>Pre-built public apps</strong> (e.g., <em>Learn DQL</em>) — search, then <em>Install</em>.</li>
+<li><strong>Technology extensions</strong> (e.g., <em>Tomcat</em>, <em>Kafka</em>).</li>
+</ul>
+<p><strong>How a technology extension works (Tomcat example):</strong></p>
+<ul>
+<li>Tells <strong>OneAgent</strong> to collect extra Tomcat-specific metrics (thread counts, request volumes); an <strong>ActiveGate</strong> can also gather them <strong>remotely</strong>.</li>
+<li>Data appears on a <strong>pre-made dashboard</strong> and in entities such as <strong>custom devices</strong>.</li>
+<li>Not listed in the Hub? <strong>Custom extensions</strong> can ingest data from almost any technology.</li>
+</ul>
+<h3 id="3-cloud-integrations">3. Cloud integrations</h3>
+<ul>
+<li>Monitor <strong>AWS, Azure</strong>, and other cloud platforms <strong>without installing OneAgent</strong> on those cloud hosts.</li>
+<li>You get a <strong>high-level view</strong>: metadata (instance names, tags) and basic infrastructure metrics.</li>
+<li>For <strong>logs, process metrics, services, traces</strong>, you still need <strong>OneAgent</strong>.</li>
+<li>Great complement for distributed or hybrid cloud estates.</li>
+</ul>
+<h3 id="4-workflows">4. Workflows</h3>
+<p>Automate tasks inside Dynatrace — a step-by-step script builder. Examples:</p>
+<ul>
+<li>Push external log data into Dynatrace</li>
+<li>Trigger an alert when a threshold is breached</li>
+<li>Call a webhook</li>
+<li>Pull external data on a schedule (the course's playful example: fetch "cat facts" from an API every 10 minutes and store them as logs)</li>
+</ul>
+<p>Workflows are also an option for <strong>sending problem notifications</strong> (from Lesson 6).</p>
+<h3 id="5-log-ingestion-masking-and-access">5. Log ingestion, masking, and access</h3>
+<ul>
+<li><strong>Ingest from many sources</strong>, not just OneAgent — e.g., a network device that can't run OneAgent can send logs to the <strong>Dynatrace API</strong>.</li>
+<li><strong>Choose what gets stored</strong> — filter out noise to control volume.</li>
+<li><strong>Mask sensitive data</strong> (tokens, API keys, sensitive code info) <strong>during ingestion</strong>.</li>
+<li><strong>Role-based access</strong> to log types.</li>
+<li><strong>Reduce storage</strong> — exclude low-priority logs, retain only high-value data → lower licensing cost.</li>
+</ul>
+<h3 id="6-application-security">6. Application Security</h3>
+<p>Dynatrace analyzes code <strong>at runtime</strong> (not just static scanning), so it knows which code is <em>actually used</em> and alerts on vulnerable third-party libraries. Two capabilities:</p>
+<ul>
+<li><strong>Runtime Vulnerability Analytics</strong> — flags known vulnerabilities in third-party libraries/frameworks.</li>
+<li><strong>Runtime Application Protection</strong> — blocks live attacks such as SQL injection (the course also mentions DDoS attempts).</li>
+</ul>
+<p>Each vulnerability gets a <strong>DSS (Dynatrace Security Score)</strong>, calculated with partner <strong>Snyk</strong> plus Dynatrace Intelligence's understanding of <strong>topology</strong> — so teams can prioritize what's most critical or most widespread.</p>
+<h3 id="7-opentelemetry-and-the-oneagent-sdk">7. OpenTelemetry and the OneAgent SDK</h3>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add custom spans/traces (a specific method, header, or value)</td>
+<td><strong>OpenTelemetry</strong></td>
+</tr>
+<tr>
+<td>Monitor a host/tech where OneAgent <strong>can't be installed or isn't supported</strong></td>
+<td><strong>OpenTelemetry</strong> (collect externally, send to Dynatrace)</td>
+</tr>
+<tr>
+<td>Capture specific request-level data (e.g., cart total) on hosts <strong>already running OneAgent</strong></td>
+<td><strong>OneAgent SDK</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Dynatrace <strong>merges</strong> native, OpenTelemetry, and SDK data into <strong>unified traces</strong>.</p>
+<h3 id="8-business-events-bizevents">8. Business events (bizevents)</h3>
+<p>Pull an important business value (user ID, cart value, membership tier, transaction amount) out of a <strong>log or span</strong>:</p>
+<ol>
+<li><strong>Source:</strong> a log or span holds the value.</li>
+<li><strong>Create a rule:</strong> what to look for and where.</li>
+<li><strong>Extract</strong> the single value from the larger data.</li>
+<li><strong>Save as a business event</strong> — often configured by admins, visible to all users.</li>
+<li><strong>Query and visualize</strong> with DQL, dashboards, notebooks.</li>
+</ol>
+<p>Default storage: if no custom bucket, the <strong>default bizevents bucket retains them for 35 days</strong>.</p>
+<h3 id="9-dynatrace-api">9. Dynatrace API</h3>
+<p>Manage Dynatrace <strong>programmatically</strong>:</p>
+<ul>
+<li>Create/configure dashboards</li>
+<li>Pull logs and metrics</li>
+<li>Modify settings</li>
+<li><strong>Push data to third-party tools</strong> (Power BI, Excel)</li>
+</ul>
+<p>Rule of thumb: <strong>anything you can do in the UI, you can do via the API.</strong> Use it to automate settings changes, migrate dashboards between environments, or extract data.</p>
+<h3 id="10-kubernetes-the-food-truck-festival-analogy">10. Kubernetes (the food-truck festival analogy)</h3>
+<table>
+<thead>
+<tr>
+<th>Kubernetes concept</th>
+<th>Analogy</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Container</strong></td>
+<td>A food-truck "station"/worker focused on one job</td>
+<td>Runs one specific process with just what it needs</td>
+</tr>
+<tr>
+<td><strong>Pod</strong></td>
+<td>The food truck</td>
+<td>Wraps one or more containers</td>
+</tr>
+<tr>
+<td><strong>Containers in a pod</strong></td>
+<td>Employees in the truck</td>
+<td>Each does a specific job</td>
+</tr>
+<tr>
+<td><strong>Node</strong></td>
+<td>The food-truck lot</td>
+<td>A machine hosting many pods</td>
+</tr>
+<tr>
+<td><strong>Cluster</strong></td>
+<td>The whole festival</td>
+<td>Many nodes working together</td>
+</tr>
+<tr>
+<td><strong>Dynatrace Operator</strong></td>
+<td>The monitoring crew</td>
+<td>Installs OneAgent, collects metrics, reports status to Dynatrace</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Kubernetes monitoring is handled by the Dynatrace Operator.</strong></p>
+<hr />
+<h2 id="definitions-glossary">Definitions (glossary)</h2>
+<ul>
+<li><strong>Dynatrace Hub:</strong> In-product catalog to install apps and activate extensions.</li>
+<li><strong>Extension:</strong> Add-on that collects extra data for a technology (via OneAgent or ActiveGate).</li>
+<li><strong>Custom device:</strong> Entity representing data from an extension (e.g., a device without OneAgent).</li>
+<li><strong>Cloud integration:</strong> Agentless connection to a cloud provider for metadata and basic metrics.</li>
+<li><strong>Workflow:</strong> Automated sequence of steps triggered by schedules or conditions.</li>
+<li><strong>Log ingestion:</strong> Bringing logs into Dynatrace from OneAgent or other sources (e.g., API).</li>
+<li><strong>DSS:</strong> Dynatrace Security Score for prioritizing vulnerabilities.</li>
+<li><strong>OpenTelemetry:</strong> Open standard for generating and sending traces/metrics/logs.</li>
+<li><strong>OneAgent SDK:</strong> Library to add custom request-level data on OneAgent-monitored processes.</li>
+<li><strong>Business event:</strong> A business value extracted from logs/spans into its own queryable record.</li>
+<li><strong>Dynatrace API:</strong> Programmatic interface for configuration and data access.</li>
+<li><strong>Dynatrace Operator:</strong> Kubernetes component that deploys and manages Dynatrace monitoring.</li>
+</ul>
+<hr />
+<h2 id="practical-examples">Practical examples</h2>
+<ol>
+<li><strong>Kafka gap:</strong> Brokers show host/process data but no Kafka-specific metrics → activate the Kafka extension from the Hub and use its dashboard.</li>
+<li><strong>Legacy firewall logs:</strong> The firewall can't run OneAgent → send its logs to the Dynatrace log-ingest API; add masking rules for IPs/tokens and drop debug-level lines to save cost.</li>
+<li><strong>Revenue tracking:</strong> Checkout requests carry <code>cartTotal</code> in the body → create a business event rule to extract it, then chart revenue per hour with DQL on a dashboard.</li>
+<li><strong>Unsupported service:</strong> A Rust microservice isn't auto-instrumented → instrument it with OpenTelemetry and export spans to Dynatrace; they stitch into the end-to-end trace.</li>
+<li><strong>Automation:</strong> A workflow posts to a Slack channel and calls a ticketing webhook whenever a problem tagged <code>Tier: Critical</code> opens.</li>
+<li><strong>Reporting:</strong> Finance wants weekly checkout numbers in Power BI → pull metrics via the Dynatrace API on a schedule.</li>
+<li><strong>Kubernetes:</strong> Deploy the Dynatrace Operator into the cluster; it rolls out OneAgent and reports node, pod, and container health.</li>
+</ol>
+<hr />
+<h2 id="knowledge-check-concepts">Knowledge-check concepts</h2>
+<ul>
+<li>Purpose of the Dynatrace Hub (install extensions and apps)</li>
+<li>Whether all extensions activate automatically with OneAgent (no — you enable what you need)</li>
+<li>Purpose of OpenTelemetry (gather data from technologies not monitored natively / custom traces)</li>
+<li>What workflows do (schedule/automate tasks in response to conditions)</li>
+<li>Which tool pushes data to Power BI/Excel (the Dynatrace API)</li>
+</ul>
+<hr />
+<h2 id="review-questions">Review questions</h2>
+<ol>
+<li>Why isn't every extension and feature enabled by default?</li>
+<li>What two kinds of things can you get from the Dynatrace Hub?</li>
+<li>Where do you see data collected by a technology extension?</li>
+<li>What does a cloud integration give you without OneAgent, and what does it <em>not</em> give you?</li>
+<li>Give three examples of what a workflow can do.</li>
+<li>A switch can't run OneAgent. How can its logs reach Dynatrace?</li>
+<li>Name three log controls available at ingestion.</li>
+<li>What are the two runtime application security capabilities, and what does DSS help with?</li>
+<li>When would you choose OpenTelemetry vs. the OneAgent SDK?</li>
+<li>List the five steps for creating a business event. Where are bizevents stored by default, and for how long?</li>
+<li>Name three things you can do with the Dynatrace API.</li>
+<li>Map: container, pod, node, cluster, Dynatrace Operator → food-truck festival terms.</li>
+</ol>
+<details class="answers"><summary>Show answers</summary>
+<ol>
+<li>To avoid collecting unnecessary data and cluttering the UI; you enable what fits your stack.</li>
+<li>Pre-built apps and technology extensions.</li>
+<li>On the extension's pre-made dashboard and in entities such as custom devices.</li>
+<li>Gives metadata and basic infrastructure metrics; does not give logs, process metrics, services, or traces (need OneAgent).</li>
+<li>Any three: ingest external logs, trigger alerts on thresholds, call webhooks, pull external API data on a schedule, send problem notifications.</li>
+<li>Send them to the Dynatrace API for log ingestion.</li>
+<li>Choose what's stored, mask sensitive data, role-based access (also exclude low-priority logs).</li>
+<li>Runtime Vulnerability Analytics and Runtime Application Protection; DSS prioritizes vulnerabilities by severity and environmental impact.</li>
+<li>OpenTelemetry for custom spans or when OneAgent can't be used/tech unsupported; OneAgent SDK for extra request-level data on hosts already running OneAgent.</li>
+<li>Source (log/span) → create rule → extract value → save as business event → query/visualize. Default bizevents bucket, 35 days.</li>
+<li>Any three: create/configure dashboards, pull logs/metrics, modify settings, push data to Power BI/Excel, migrate dashboards.</li>
+<li>Container → focused worker/station; pod → food truck; node → food-truck lot; cluster → whole festival; Operator → monitoring crew.</li>
+</ol>
+</details>
+
+<div class="pager"><a href="07-analyzing-observability-data.html"><small>Previous</small>Analyzing Your Observability Data</a><a href="09-cram-sheet-and-final-review.html" style="text-align:right"><small>Next</small>Cram Sheet and Final Review</a></div>
+<footer>Original study notes based on the Dynatrace University course "Dynatrace Essentials".</footer>
+</main>
+</div>
+</body>
+</html>

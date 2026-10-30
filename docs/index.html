@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynatrace Essentials — Study Notes · Dynatrace Essentials Notes</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+(function(){
+  var r=document.documentElement;
+  try{var t=localStorage.getItem('theme'); if(t) r.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){
+    var b=document.querySelector('.theme-btn'); if(!b) return;
+    b.addEventListener('click',function(){
+      var dark = r.getAttribute('data-theme')==='dark' ||
+        (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var n = dark ? 'light' : 'dark'; r.setAttribute('data-theme',n);
+      try{localStorage.setItem('theme',n);}catch(e){}
+    });
+  });
+})();
+</script>
+
+</head>
+<body>
+<div class="layout">
+<nav class="side" aria-label="Lessons">
+<div class="brand">Dynatrace Essentials Notes</div>
+<ol>
+<li><a href="index.html" class="active"><span class="n"></span><span>Home</span></a></li>
+<li><a href="01-introduction-to-dynatrace.html"><span class="n">1</span><span>An Introduction to Dynatrace</span></a></li>
+<li><a href="02-dynatrace-architecture.html"><span class="n">2</span><span>Dynatrace Architecture</span></a></li>
+<li><a href="03-dynatrace-topology.html"><span class="n">3</span><span>Dynatrace Topology (Smartscape)</span></a></li>
+<li><a href="04-digital-experience-monitoring.html"><span class="n">4</span><span>Digital Experience Monitoring (DEM)</span></a></li>
+<li><a href="05-smart-organization.html"><span class="n">5</span><span>Smart Organization</span></a></li>
+<li><a href="06-exploring-problems.html"><span class="n">6</span><span>Exploring Problems</span></a></li>
+<li><a href="07-analyzing-observability-data.html"><span class="n">7</span><span>Analyzing Your Observability Data</span></a></li>
+<li><a href="08-extending-dynatrace.html"><span class="n">8</span><span>Extending Dynatrace</span></a></li>
+<li><a href="09-cram-sheet-and-final-review.html"><span class="n">★</span><span>Cram Sheet and Final Review</span></a></li>
+</ol>
+</nav>
+<main>
+<div class="topbar"><button class="theme-btn" type="button">Toggle theme</button></div>
+<h1 id="dynatrace-essentials-study-notes">Dynatrace Essentials — Study Notes</h1>
+<p>Original study notes for the Dynatrace University course <em>Dynatrace Essentials</em> (8 lessons + certificate exam). Each lesson file has: learning objectives, explained topics, a glossary, practical examples, the concepts the lesson's knowledge check tests, and review questions with answers.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>File</th>
+<th>Core topics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><a href="01-introduction-to-dynatrace.html"><code>01-introduction-to-dynatrace</code></a></td>
+<td>Observability vs. monitoring, tool consolidation, OneAgent, ActiveGate, metrics/logs/traces, root cause analysis</td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="02-dynatrace-architecture.html"><code>02-dynatrace-architecture</code></a></td>
+<td>SaaS, Grail (MPP lakehouse), buckets &amp; retention, Dynatrace Apps, OneAgent monitoring modes, platform support</td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="03-dynatrace-topology.html"><code>03-dynatrace-topology</code></a></td>
+<td>Smartscape's 5 layers, hosts, processes &amp; process groups, services, databases, applications, actions, detection rules, Apdex</td>
+</tr>
+<tr>
+<td>4</td>
+<td><a href="04-digital-experience-monitoring.html"><code>04-digital-experience-monitoring</code></a></td>
+<td>RUM, auto-injection vs. agentless, Apdex thresholds, mobile RUM, user actions &amp; sessions, synthetics, Session Replay</td>
+</tr>
+<tr>
+<td>5</td>
+<td><a href="05-smart-organization.html"><code>05-smart-organization</code></a></td>
+<td>Host groups, naming rules, tags, process group separation</td>
+</tr>
+<tr>
+<td>6</td>
+<td><a href="06-exploring-problems.html"><code>06-exploring-problems</code></a></td>
+<td>Anomalies, static vs. baseline thresholds, problem types, root cause, analysis tools, Dynatrace Intelligence/Davis, problem settings</td>
+</tr>
+<tr>
+<td>7</td>
+<td><a href="07-analyzing-observability-data.html"><code>07-analyzing-observability-data</code></a></td>
+<td>Dashboards, DQL, Notebooks, Logs and Traces apps</td>
+</tr>
+<tr>
+<td>8</td>
+<td><a href="08-extending-dynatrace.html"><code>08-extending-dynatrace</code></a></td>
+<td>Hub, extensions, cloud integrations, workflows, log ingestion, AppSec, OpenTelemetry, OneAgent SDK, bizevents, API, Kubernetes</td>
+</tr>
+<tr>
+<td>—</td>
+<td><a href="09-cram-sheet-and-final-review.html"><code>09-cram-sheet-and-final-review</code></a></td>
+<td>All the numbers, comparisons, and a 40-question mixed review</td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-to-use-these-notes">How to use these notes</h2>
+<ol>
+<li>Read a lesson file after (or instead of re-watching) the lesson.</li>
+<li>Cover the answers and do the review questions.</li>
+<li>Before the exam, work through file 09 cold, then revisit any lesson where you missed questions.</li>
+</ol>
+<blockquote>
+<p>Note on sources: content is drawn from the course lessons. A few items flagged "supplementary" (e.g., extra DQL examples) go beyond the course text; verify them in the Dynatrace Playground or docs. Where the course itself was inconsistent, the notes call it out.</p>
+</blockquote>
+<div class="pager"><span></span><a href="01-introduction-to-dynatrace.html" style="text-align:right"><small>Next</small>An Introduction to Dynatrace</a></div>
+<footer>Original study notes based on the Dynatrace University course "Dynatrace Essentials".</footer>
+</main>
+</div>
+</body>
+</html>

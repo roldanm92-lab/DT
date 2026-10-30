@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 4 — Digital Experience Monitoring (DEM) · Dynatrace Essentials Notes</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+(function(){
+  var r=document.documentElement;
+  try{var t=localStorage.getItem('theme'); if(t) r.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){
+    var b=document.querySelector('.theme-btn'); if(!b) return;
+    b.addEventListener('click',function(){
+      var dark = r.getAttribute('data-theme')==='dark' ||
+        (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var n = dark ? 'light' : 'dark'; r.setAttribute('data-theme',n);
+      try{localStorage.setItem('theme',n);}catch(e){}
+    });
+  });
+})();
+</script>
+
+</head>
+<body>
+<div class="layout">
+<nav class="side" aria-label="Lessons">
+<div class="brand">Dynatrace Essentials Notes</div>
+<ol>
+<li><a href="index.html"><span class="n"></span><span>Home</span></a></li>
+<li><a href="01-introduction-to-dynatrace.html"><span class="n">1</span><span>An Introduction to Dynatrace</span></a></li>
+<li><a href="02-dynatrace-architecture.html"><span class="n">2</span><span>Dynatrace Architecture</span></a></li>
+<li><a href="03-dynatrace-topology.html"><span class="n">3</span><span>Dynatrace Topology (Smartscape)</span></a></li>
+<li><a href="04-digital-experience-monitoring.html" class="active"><span class="n">4</span><span>Digital Experience Monitoring (DEM)</span></a></li>
+<li><a href="05-smart-organization.html"><span class="n">5</span><span>Smart Organization</span></a></li>
+<li><a href="06-exploring-problems.html"><span class="n">6</span><span>Exploring Problems</span></a></li>
+<li><a href="07-analyzing-observability-data.html"><span class="n">7</span><span>Analyzing Your Observability Data</span></a></li>
+<li><a href="08-extending-dynatrace.html"><span class="n">8</span><span>Extending Dynatrace</span></a></li>
+<li><a href="09-cram-sheet-and-final-review.html"><span class="n">★</span><span>Cram Sheet and Final Review</span></a></li>
+</ol>
+</nav>
+<main>
+<div class="topbar"><button class="theme-btn" type="button">Toggle theme</button></div>
+<h1 id="lesson-4-digital-experience-monitoring-dem">Lesson 4 — Digital Experience Monitoring (DEM)</h1>
+<h2 id="learning-objectives">Learning objectives</h2>
+<ul>
+<li>Describe the purpose and components of <strong>Digital Experience Monitoring</strong> (RUM + Synthetics, plus Session Replay)</li>
+<li>Explain how DEM surfaces performance bottlenecks, downtime, and usability issues on web and mobile</li>
+<li>Explain how RUM data is collected (<strong>auto-injection</strong> vs. <strong>agentless</strong>), what's measured (<strong>visually complete, errors, Apdex</strong>), and how <strong>user actions</strong> and <strong>user sessions</strong> work</li>
+<li>Configure and customize <strong>synthetic monitors</strong></li>
+<li>Explain <strong>Session Replay</strong> and its privacy model</li>
+</ul>
+<hr />
+<h2 id="key-topics-and-explanations">Key topics and explanations</h2>
+<h3 id="1-why-dem">1. Why DEM</h3>
+<p>Your site "working" isn't the same as it working <em>well for every user</em>. Some problems only appear for certain browsers, devices, or regions and are invisible from the server side. DEM shows what users actually experience.</p>
+<p><strong>DEM = Real User Monitoring (RUM) + Synthetic Monitoring</strong></p>
+<ul>
+<li><strong>RUM:</strong> observes <em>real</em> users.</li>
+<li><strong>Synthetics:</strong> <em>simulates</em> users to proactively test availability and performance — even when nobody is on the site.</li>
+</ul>
+<h3 id="2-real-user-monitoring-rum">2. Real User Monitoring (RUM)</h3>
+<p>Measures front-end performance <strong>from the perspective of actual users</strong> — page loads, clicks, errors, timings. Works for websites, <strong>mobile apps</strong>, and even custom apps such as smart devices (if endpoints are reachable).</p>
+<p><strong>Store analogy:</strong> watching customers from the front door to checkout — who comes in, what they look at, what makes them stay or leave.</p>
+<h4 id="what-rum-measures">What RUM measures</h4>
+<ul>
+<li><strong>Visually complete time:</strong> the moment everything <em>visible on screen</em> has loaded, even if below-the-fold content is still loading. (YouTube example: player, title, and recommendations appear and you start watching while comments are still loading.)</li>
+<li><strong>Error rate:</strong> broken images, 404s, 5xx server errors (500, 503).</li>
+<li><strong>Apdex (Application Performance Index):</strong> an industry-standard (not Dynatrace-specific) user-satisfaction score.</li>
+</ul>
+<h4 id="apdex-default-thresholds-memorize">Apdex default thresholds (memorize)</h4>
+<table>
+<thead>
+<tr>
+<th>Load time / outcome</th>
+<th>Rating</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–3 s</td>
+<td><strong>Satisfied</strong></td>
+</tr>
+<tr>
+<td>3–15 s</td>
+<td><strong>Tolerating</strong></td>
+</tr>
+<tr>
+<td>&gt; 15 s <strong>or any error</strong> (e.g., 404)</td>
+<td><strong>Frustrated</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>An action that errors is <strong>frustrating even if it loads in 0.5 s</strong>.</li>
+<li>Overall score ranges up to a <strong>maximum of 1</strong>; closer to 1 = better.</li>
+<li>Thresholds are <strong>customizable</strong> for the whole app or for specific actions — but per-action thresholds require marking it a <strong>key user action</strong>.</li>
+</ul>
+<h4 id="how-rum-data-is-collected-auto-injection">How RUM data is collected: auto-injection</h4>
+<ol>
+<li>Browser requests a page; web server builds it.</li>
+<li>With OneAgent on the web server, OneAgent has the server <strong>insert a JavaScript snippet</strong> (the RUM JavaScript, part of OneAgent) into each page served.</li>
+<li>The snippet runs in the user's browser and sends experience data back to Dynatrace.</li>
+</ol>
+<p>This is <strong>auto-injection</strong>. <strong>Restaurant analogy:</strong> the manager has servers hand out a satisfaction survey card with every meal — except the browser "fills it out" automatically and reliably.</p>
+<h4 id="where-rum-data-goes">Where RUM data goes</h4>
+<p>Into a Dynatrace <strong>application</strong> entity, routed by <strong>detection rules</strong> (typically URL/domain patterns). E.g., traffic to <code>astroshop.com</code> → application "Astroshop."</p>
+<h4 id="extra-attributes-captured">Extra attributes captured</h4>
+<p>Geolocation (can be <strong>masked</strong> for privacy/compliance), <strong>browser</strong> (Chrome, Edge, Safari…), and <strong>user type</strong> (real user, synthetic, bot). These let you filter: is the problem everywhere, or only in one browser/region/device? (e.g., an error only on Internet Explorer 7 — an outdated browser you may not support.)</p>
+<h3 id="3-mobile-rum">3. Mobile RUM</h3>
+<ul>
+<li>Covers mobile platforms such as <strong>iOS and Android</strong>.</li>
+<li>Same core metrics: load times, errors, Apdex — <strong>plus app crashes</strong>.</li>
+<li>Captures <strong>touch interactions</strong> instead of clicks.</li>
+<li>Uses a <strong>different instrumentation/configuration</strong> than web injection (see Dynatrace mobile docs).</li>
+</ul>
+<h3 id="4-agentless-rum">4. Agentless RUM</h3>
+<ul>
+<li>For when you <strong>can't install OneAgent on the web server</strong>:</li>
+<li>no access to the server</li>
+<li>the technology doesn't support auto-injection</li>
+<li>security policy forbids installing OneAgent</li>
+<li>You <strong>manually insert</strong> the Dynatrace JavaScript snippet into each page you want monitored. <strong>Pages without the snippet aren't monitored.</strong></li>
+<li><strong>Data is the same</strong> as auto-injected RUM; only <em>how the code gets there</em> differs.</li>
+</ul>
+<h3 id="5-user-actions">5. User actions</h3>
+<p>Interactions that trigger a request to a web server process.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Trigger</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Load action</strong></td>
+<td>Full page load</td>
+<td>Home page, login page, search results page</td>
+</tr>
+<tr>
+<td><strong>XHR action</strong></td>
+<td>Part of the page updates without full reload</td>
+<td>Applying filters, swapping a product image</td>
+</tr>
+<tr>
+<td><strong>Custom action</strong></td>
+<td>Defined by you via the <strong>Dynatrace JavaScript API</strong></td>
+<td>Something not captured by default</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>OpenKit:</strong> for <strong>thick clients</strong> outside a browser (Java, .NET, C) — captures user sessions from installed desktop apps.</li>
+<li>Custom actions are typically planned by the <strong>application team</strong> (what to track) and implemented by the <strong>development team</strong> (placing the code).</li>
+</ul>
+<h4 id="key-user-actions">Key user actions</h4>
+<p>Mark important actions as <strong>key user actions</strong> to:</p>
+<ul>
+<li><strong>Customize Apdex thresholds</strong> per action (e.g., login must load &lt; 2 s)</li>
+<li><strong>Add them to dashboards</strong></li>
+<li>Get <strong>long-term storage</strong> of that action's data (noted as likely to change with Grail)</li>
+</ul>
+<p><strong>Not retroactive</strong> — only data recorded <em>after</em> marking benefits.</p>
+<h4 id="deeper-analysis-tools">Deeper analysis tools</h4>
+<ul>
+<li><strong>Waterfall analysis:</strong> the load sequence of page resources (scripts, images, CSS) to pinpoint what slows an action; based on <strong>W3C timing standards</strong> (no proprietary metrics).</li>
+<li><strong>Error analysis:</strong> JavaScript and request errors tied to specific user actions.</li>
+<li>With <strong>Grail</strong>, RUM data storage/structure evolves, but the concepts stay the same.</li>
+</ul>
+<h3 id="6-user-sessions">6. User sessions</h3>
+<p>A <strong>sequence of interactions by one user</strong> in one or more monitored apps over a period of time (visit, log in, search, buy).</p>
+<ul>
+<li>Captures page loads, payments, errors, navigation, plus: user tags/identifiers, apps visited, screen resolution, browser, OS, device type, and more.</li>
+</ul>
+<h4 id="user-tagging">User tagging</h4>
+<p>Label sessions with an identifier such as username or email (e.g., recognizing "Ryan" from a "Welcome Ryan" element). Usually set up by someone who knows the app's code.</p>
+<h4 id="behavior-analysis">Behavior analysis</h4>
+<ul>
+<li><strong>Entry and exit points</strong> → find drop-offs (e.g., a failing search page).</li>
+<li><strong>Bounce rate</strong> → a <em>bounce</em> is a session with a single action and immediate exit, often from slowness/poor experience.</li>
+<li><strong>Expected paths</strong> → are users completing purchases/logins?</li>
+</ul>
+<h4 id="conversion-goals">Conversion goals</h4>
+<p>Events marking a successful session:</p>
+<ul>
+<li>Reaching a specific page (e.g., "Payment Finish")</li>
+<li>Performing a number of actions</li>
+<li>
+<p>Staying a minimum time
+Most commonly based on a specific user action (e.g., completed purchase).</p>
+</li>
+<li>
+<p>New goals can take <strong>~30 minutes</strong> to show results.</p>
+</li>
+<li>Only <strong>completed</strong> sessions count toward goals.</li>
+</ul>
+<h4 id="when-a-web-user-session-ends-memorize">When a web user session ends (memorize)</h4>
+<ul>
+<li><strong>35 minutes</strong> of browser inactivity</li>
+<li><strong>Browser window closed</strong> (closing a <em>tab</em> does not end it)</li>
+<li><strong>8 hours</strong> of activity (hard limit)</li>
+<li><strong>More than 200 user actions</strong> → a new session starts on the <strong>201st</strong></li>
+<li><strong><code>dtrum.endSession()</code></strong> called via the JavaScript API (e.g., on logout)</li>
+</ul>
+<h4 id="licensing">Licensing</h4>
+<ul>
+<li>Typically <strong>one license unit per session</strong>.</li>
+<li><strong>Bounce sessions</strong> (single action) are usually <strong>not counted</strong>.</li>
+<li>Terms vary by contract — check with your account rep.</li>
+</ul>
+<h4 id="privacy-and-masking">Privacy and masking</h4>
+<p>Dynatrace can mask <strong>email addresses, IP addresses, and locations</strong>. Seeing "masked" means data is hidden by policy <strong>or</strong> you lack permission.</p>
+<h3 id="7-synthetic-monitoring">7. Synthetic monitoring</h3>
+<p>Simulates a user visiting your site to check <strong>availability and performance 24/7</strong>, even with zero real traffic. (School-website example: site dies at 2 a.m.; synthetics alert the team before morning.)</p>
+<p>Alerts can cover <strong>downtime</strong>, <strong>slow performance</strong>, and <strong>failed logins/broken flows</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Monitor type</th>
+<th>What it does</th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Browser monitor</strong></td>
+<td>Loads a single page</td>
+<td>Basic uptime/performance of key pages</td>
+</tr>
+<tr>
+<td><strong>Browser clickpath</strong></td>
+<td>Replays a multi-step journey (login → search → buy)</td>
+<td>Testing whole workflows; requires the <strong>Dynatrace Synthetic Recorder</strong> Chrome extension to record</td>
+</tr>
+<tr>
+<td><strong>HTTP monitor</strong></td>
+<td>Calls an API endpoint/URL with no visual page</td>
+<td>"Are you there?" checks, like ping/curl</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Runs from <strong>public Dynatrace locations worldwide</strong> (choose regions like US, Europe, Australia).</li>
+<li><strong>No OneAgent required.</strong></li>
+</ul>
+<p><strong>Creating a monitor:</strong> choose type → enter URL → record actions (clickpaths) → pick locations → set frequency (e.g., 5/15/60 min) → save. New monitors can take <strong>15–30 minutes</strong> to become active.</p>
+<p><strong>Licensing drivers:</strong> number of actions, number of locations, and frequency.</p>
+<h4 id="customizing-synthetics">Customizing synthetics</h4>
+<ul>
+<li><strong>Frequency and locations</strong></li>
+<li><strong>Outage handling:</strong> how many consecutive failures raise a problem (e.g., ignore 1, alert on 3 in a row)</li>
+<li><strong>Performance thresholds:</strong> alert if a page exceeds, say, 3 s</li>
+<li><strong>On-demand execution:</strong> run now, manually or via <strong>API</strong> for remote execution</li>
+<li><strong>Credential vault:</strong> store logins securely so teammates can build monitors without seeing passwords</li>
+<li><strong>Private apps:</strong> either <strong>allowlist Dynatrace synthetic IPs</strong> through your firewall, or run a <strong>private synthetic location</strong> on an <strong>ActiveGate</strong> inside your network</li>
+</ul>
+<h3 id="8-session-replay">8. Session Replay</h3>
+<ul>
+<li><strong>Reconstructs</strong> a user's journey visually from collected data — <strong>not a video/screen recording</strong>.</li>
+<li>Great for hard-to-reproduce front-end issues (button does nothing, endless spinner).</li>
+<li><strong>Why it matters:</strong> <strong>security</strong> (no sensitive recordings stored) and <strong>efficiency</strong> (far less storage and cost).</li>
+<li><strong>Masking by default:</strong> text, form fields, images, dropdown values are hidden; you see layout. You can unmask chosen elements (e.g., product images), but <strong>passwords are always masked</strong>.</li>
+<li>Uses: troubleshoot front-end issues, see what preceded an error, speed up support/dev response, keep privacy.</li>
+</ul>
+<hr />
+<h2 id="definitions-glossary">Definitions (glossary)</h2>
+<ul>
+<li><strong>DEM:</strong> Digital Experience Monitoring — RUM + Synthetics (+ Session Replay).</li>
+<li><strong>RUM:</strong> Measuring front-end performance from real users.</li>
+<li><strong>Visually complete:</strong> Time until all visible on-screen content has loaded.</li>
+<li><strong>Apdex:</strong> Satisfied/Tolerating/Frustrated score, max 1.</li>
+<li><strong>Auto-injection:</strong> OneAgent inserting the RUM JavaScript into served pages.</li>
+<li><strong>Agentless RUM:</strong> Manually adding the RUM JavaScript to pages.</li>
+<li><strong>Load / XHR / Custom action:</strong> Full page load / partial update / API-defined action.</li>
+<li><strong>Key user action:</strong> An action given custom Apdex, dashboard visibility, and long-term storage.</li>
+<li><strong>OpenKit:</strong> Library for monitoring non-browser thick clients.</li>
+<li><strong>User session:</strong> All actions by one user during a visit.</li>
+<li><strong>Bounce:</strong> A session with only one action.</li>
+<li><strong>Conversion goal:</strong> Event defining a successful session.</li>
+<li><strong>Synthetic monitor:</strong> Scheduled simulated user/HTTP check.</li>
+<li><strong>Credential vault:</strong> Secure store for synthetic-monitor credentials.</li>
+<li><strong>Private synthetic location:</strong> An ActiveGate-hosted synthetic runner inside your network.</li>
+<li><strong>Session Replay:</strong> Data-based reconstruction of a user's session.</li>
+</ul>
+<hr />
+<h2 id="practical-examples">Practical examples</h2>
+<ol>
+<li><strong>Apdex reasoning:</strong> login loads in 2.1 s → satisfied; search loads in 9 s → tolerating; checkout returns 500 in 0.4 s → frustrated.</li>
+<li><strong>Tightening a threshold:</strong> Make "Click on Login" a key user action, then set its satisfied threshold to 2 s.</li>
+<li><strong>Browser-specific bug:</strong> JS errors spike. Filter user actions by browser: 100% are Safari 15. Fix the polyfill.</li>
+<li><strong>Session-end trivia:</strong> A user opens your site at 9:00, leaves the tab open, and returns at 9:40 → the 9:00 session ended after 35 minutes of inactivity; 9:40 starts a new session.</li>
+<li><strong>Synthetic for an internal HR portal:</strong> Not reachable from the internet → deploy a private synthetic location on an internal ActiveGate, store the test account in the credential vault, run a clickpath every 15 min, alert after 3 consecutive failures.</li>
+<li><strong>Agentless scenario:</strong> Your marketing site is hosted by a SaaS CMS where you can't install software → paste the Dynatrace RUM snippet into the site template.</li>
+</ol>
+<hr />
+<h2 id="knowledge-check-concepts">Knowledge-check concepts</h2>
+<ul>
+<li>What RUM primarily helps you understand (real users' experience and performance)</li>
+<li>When to use Agentless RUM (OneAgent can't be installed on the web server)</li>
+<li>Recognizing a user action (e.g., clicking "Buy Now")</li>
+<li>What a user session represents (a series of interactions during one visit)</li>
+<li>The purpose of synthetic monitoring (simulate users to test availability/performance)</li>
+<li>What Session Replay does (reconstruct experience; not a video)</li>
+</ul>
+<hr />
+<h2 id="review-questions">Review questions</h2>
+<ol>
+<li>What two capabilities make up DEM, and how do they differ?</li>
+<li>Define "visually complete" in your own words.</li>
+<li>A page returns a 404 in 0.3 s. What is its Apdex rating, and why?</li>
+<li>What must you do before you can set a custom Apdex threshold for a single action?</li>
+<li>Walk through auto-injection in three steps.</li>
+<li>Name three situations that call for Agentless RUM. Does it collect less data?</li>
+<li>Classify: (a) navigating to /cart (b) a "Load more reviews" button that updates the page in place (c) a manually instrumented "Print receipt" event.</li>
+<li>Name the five conditions that end a web user session.</li>
+<li>Are bounce sessions typically counted for licensing?</li>
+<li>Which synthetic monitor would you use for (a) a REST health endpoint (b) the homepage (c) a login-search-checkout journey?</li>
+<li>Do synthetics need OneAgent? How do you test an app that's only reachable inside your network?</li>
+<li>Why doesn't Session Replay store video, and what is always masked?</li>
+</ol>
+<details class="answers"><summary>Show answers</summary>
+<ol>
+<li>RUM (real users) and Synthetics (simulated users that test proactively, even with no traffic).</li>
+<li>The moment all content visible on the user's screen has loaded, even if off-screen content is still loading.</li>
+<li>Frustrated — errors count as frustrating regardless of speed.</li>
+<li>Mark it as a key user action.</li>
+<li>Browser requests page → OneAgent has the web server inject the RUM JavaScript → JS reports experience data to Dynatrace.</li>
+<li>No server access; technology doesn't support injection; security policy forbids OneAgent. No — same data.</li>
+<li>(a) Load action (b) XHR action (c) Custom action.</li>
+<li>35 min inactivity; browser window closed; 8 hours; &gt;200 actions; <code>dtrum.endSession()</code>.</li>
+<li>Usually not.</li>
+<li>(a) HTTP monitor (b) Browser monitor (c) Browser clickpath.</li>
+<li>No. Use a private synthetic location on an ActiveGate (or allowlist Dynatrace synthetic IPs).</li>
+<li>It reconstructs from collected data for security and storage efficiency; passwords are always masked.</li>
+</ol>
+</details>
+
+<div class="pager"><a href="03-dynatrace-topology.html"><small>Previous</small>Dynatrace Topology (Smartscape)</a><a href="05-smart-organization.html" style="text-align:right"><small>Next</small>Smart Organization</a></div>
+<footer>Original study notes based on the Dynatrace University course "Dynatrace Essentials".</footer>
+</main>
+</div>
+</body>
+</html>

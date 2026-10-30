@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 3 — Dynatrace Topology (Smartscape) · Dynatrace Essentials Notes</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+(function(){
+  var r=document.documentElement;
+  try{var t=localStorage.getItem('theme'); if(t) r.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){
+    var b=document.querySelector('.theme-btn'); if(!b) return;
+    b.addEventListener('click',function(){
+      var dark = r.getAttribute('data-theme')==='dark' ||
+        (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var n = dark ? 'light' : 'dark'; r.setAttribute('data-theme',n);
+      try{localStorage.setItem('theme',n);}catch(e){}
+    });
+  });
+})();
+</script>
+
+</head>
+<body>
+<div class="layout">
+<nav class="side" aria-label="Lessons">
+<div class="brand">Dynatrace Essentials Notes</div>
+<ol>
+<li><a href="index.html"><span class="n"></span><span>Home</span></a></li>
+<li><a href="01-introduction-to-dynatrace.html"><span class="n">1</span><span>An Introduction to Dynatrace</span></a></li>
+<li><a href="02-dynatrace-architecture.html"><span class="n">2</span><span>Dynatrace Architecture</span></a></li>
+<li><a href="03-dynatrace-topology.html" class="active"><span class="n">3</span><span>Dynatrace Topology (Smartscape)</span></a></li>
+<li><a href="04-digital-experience-monitoring.html"><span class="n">4</span><span>Digital Experience Monitoring (DEM)</span></a></li>
+<li><a href="05-smart-organization.html"><span class="n">5</span><span>Smart Organization</span></a></li>
+<li><a href="06-exploring-problems.html"><span class="n">6</span><span>Exploring Problems</span></a></li>
+<li><a href="07-analyzing-observability-data.html"><span class="n">7</span><span>Analyzing Your Observability Data</span></a></li>
+<li><a href="08-extending-dynatrace.html"><span class="n">8</span><span>Extending Dynatrace</span></a></li>
+<li><a href="09-cram-sheet-and-final-review.html"><span class="n">★</span><span>Cram Sheet and Final Review</span></a></li>
+</ol>
+</nav>
+<main>
+<div class="topbar"><button class="theme-btn" type="button">Toggle theme</button></div>
+<h1 id="lesson-3-dynatrace-topology-smartscape">Lesson 3 — Dynatrace Topology (Smartscape)</h1>
+<h2 id="learning-objectives">Learning objectives</h2>
+<ul>
+<li>Explain how Dynatrace topology maps IT components, their relationships, and data flows</li>
+<li>Navigate <strong>Smartscape</strong> and its layers, and explain how it shows dependencies and real-time changes</li>
+<li>Define <strong>host, process, process group, service, database (as a service), and application</strong> in Dynatrace terms</li>
+<li>Know where to install OneAgent to see <strong>database queries</strong></li>
+<li>Explain <strong>web application detection rules</strong>, <strong>user/XHR/custom actions</strong>, and <strong>Apdex</strong></li>
+</ul>
+<hr />
+<h2 id="key-topics-and-explanations">Key topics and explanations</h2>
+<h3 id="1-what-topology-is-and-why-it-matters">1. What topology is and why it matters</h3>
+<ul>
+<li><strong>Topology (computing):</strong> how devices or components are arranged and connected — a map of who talks to whom.</li>
+<li><strong>Office printer analogy:</strong> laptops, desktops, tablets, phones all send jobs to one shared printer. When printing fails for everyone, knowing the layout tells you the shared printer is the common link — so you check it first instead of every computer one by one.</li>
+<li><strong>Why it matters:</strong> topology turns "something's broken" into "here's the shared dependency, start there." Fewer guesses, faster fixes, better planning.</li>
+</ul>
+<h3 id="2-smartscape">2. Smartscape</h3>
+<ul>
+<li>Dynatrace <strong>automatically discovers</strong> components and builds a <strong>real-time, interactive map</strong> of the environment and how components interact.</li>
+<li>Full-stack visibility from <strong>user clicks down to infrastructure</strong>, across dynamic, hybrid, and multi-cloud environments.</li>
+<li>Shows <strong>who communicates with whom</strong> and <strong>what's affected</strong> when something fails.</li>
+</ul>
+<p><strong>The five Smartscape layers (top to bottom):</strong></p>
+<ol>
+<li><strong>Applications</strong> — user-facing front ends</li>
+<li><strong>Services</strong> — server-side code handling requests</li>
+<li><strong>Processes</strong> — running programs</li>
+<li><strong>Hosts</strong> — machines running OneAgent</li>
+<li><strong>Data centers</strong> — physical/virtual locations of hosts</li>
+</ol>
+<blockquote>
+<p>Memory aid (top → bottom): <strong>"All Stars Pass Heavy Data"</strong> — Applications, Services, Processes, Hosts, Data centers.</p>
+</blockquote>
+<p>Databases are <em>not</em> a separate layer; they're monitored as a <strong>special type of service</strong>.</p>
+<h3 id="3-hosts">3. Hosts</h3>
+<ul>
+<li><strong>Definition:</strong> a physical, virtual, or cloud instance running an operating system — in practice, any computer/server with OneAgent installed (web server, DB server, even a laptop).</li>
+<li>On install, OneAgent immediately collects host <strong>vital signs</strong>: CPU, memory, disk activity, running processes.</li>
+<li><strong>Doctor analogy:</strong> a doctor checks heart rate, oxygen, blood pressure; OneAgent checks a host's vitals.</li>
+<li>Questions host data answers: Is it normal? Overloaded or underperforming? Showing early warning signs?</li>
+</ul>
+<h3 id="4-processes-and-process-groups">4. Processes and process groups</h3>
+<ul>
+<li><strong>Process:</strong> a running program on a host (e.g., a browser, a Tomcat web-server process, a Docker/Kubernetes container). Processes act as containers that host services.</li>
+<li><em>Foreground</em> processes: you see and interact with them.</li>
+<li><em>Background</em> processes: run quietly behind the scenes.</li>
+<li><strong>Analogy:</strong> one sales associate with a specific job in the store.</li>
+<li><strong>Process group:</strong> a logical cluster of processes that perform the <strong>same function</strong> for the same application/deployment, usually across <strong>multiple hosts</strong>.</li>
+<li>Example: three web servers all serving the same site → one process group.</li>
+<li><strong>Analogy:</strong> the whole team of sales associates. If one takes a break, others cover — redundancy and scale.</li>
+</ul>
+<h3 id="5-services">5. Services</h3>
+<ul>
+<li><strong>Definition:</strong> server-side code executed within a process group. When a process handles a <strong>request</strong>, Dynatrace groups that request data into a <strong>service</strong>.</li>
+<li><strong>Analogy:</strong> if the process is the employee, the service is the specific task performed in response to a customer request ("I'd like a compact beginner telescope" → employee fetches it).</li>
+<li><strong>Key behavior:</strong> nothing happens without a request. <strong>Services only appear for timeframes in which they received requests</strong> — no requests, no service data.</li>
+<li>Common examples: loading a web page, processing a payment (often split into smaller services, e.g., a "charge card" service), logging in, answering API requests.</li>
+<li>What Dynatrace shows for services: which requests occurred, how long they took, which process handled them, and <strong>code-level</strong> detail (which methods consumed the most time), plus failures and dependencies.</li>
+</ul>
+<h3 id="6-databases">6. Databases</h3>
+<ul>
+<li>Monitored as a <strong>special type of service</strong>, not a separate Smartscape layer.</li>
+<li>Dynatrace captures the <strong>queries/statements</strong> sent to the database, how long they took, and errors — <strong>from the calling side</strong>.</li>
+<li><strong>Therefore: install OneAgent on the application/middleware server that makes the database calls</strong> to see the queries (code-level visibility).</li>
+</ul>
+<p><strong>Stockroom analogy:</strong> the database is the stockroom; the app server is the sales associate who goes in to fetch items.</p>
+<table>
+<thead>
+<tr>
+<th>OneAgent installed on…</th>
+<th>What you can see</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Database only</strong></td>
+<td>That the database is busy — but not <em>what</em> was requested or by whom</td>
+</tr>
+<tr>
+<td><strong>App server only</strong></td>
+<td>What was asked of the DB and how long it took — not how the DB handled it internally</td>
+</tr>
+<tr>
+<td><strong>Both</strong></td>
+<td>The complete picture: request, handling, and timing</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recommended setup:</strong> OneAgent on the app server (Full-Stack, for queries) <strong>and</strong> on the database host in <strong>Infrastructure mode</strong> (for host/process metrics). Full-Stack on the DB host adds no extra query detail, so Infrastructure mode gives the same useful visibility at lower license cost. (Confirm licensing specifics with your Dynatrace rep.)</p>
+<h3 id="7-applications-webmobile">7. Applications (web/mobile)</h3>
+<ul>
+<li><strong>IT meaning of "application":</strong> any business software, including back-end systems.</li>
+<li><strong>Dynatrace meaning:</strong> a <strong>user-facing</strong> browser or mobile front end — software real users interact with directly. Back-end systems without a UI are <em>not</em> applications in Dynatrace.</li>
+<li>Data is collected from the <strong>user's browser</strong>: page load time, whether content rendered correctly, errors.</li>
+<li><strong>Requirement:</strong> OneAgent in <strong>Full-Stack</strong> mode on the <strong>web servers</strong> that serve the pages. (Mobile monitoring is covered in Lesson 4.)</li>
+</ul>
+<p><strong>Action types:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Action type</th>
+<th>What it is</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>User action</strong></td>
+<td>A click/interaction the user performs</td>
+<td>Clicking a Login button</td>
+</tr>
+<tr>
+<td><strong>XHR action</strong></td>
+<td>A background request that updates part of a page without a full reload</td>
+<td>Clicking "Next" in a photo gallery</td>
+</tr>
+<tr>
+<td><strong>Custom action</strong></td>
+<td>A business-specific action you track manually via the Dynatrace JavaScript API / OpenKit</td>
+<td>Tracking PDF downloads</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Web application detection rules:</strong></p>
+<ul>
+<li>By default all web traffic lands in one application called <strong>"My Web Application."</strong></li>
+<li>Create <strong>detection rules</strong> (usually by <strong>domain or URL pattern</strong>) to split traffic into specific applications.</li>
+<li>After rules are added, <strong>new</strong> traffic is grouped correctly; <strong>old</strong> traffic stays in "My Web Application" (rules aren't retroactive).</li>
+</ul>
+<p><strong>Apdex (Application Performance Index):</strong> a user-experience score Dynatrace assigns to each user session and action based on how smooth or frustrating it was — like a store manager judging whether a customer's visit went well.</p>
+<h3 id="8-monitoring-modes-revisited">8. Monitoring modes revisited</h3>
+<p>Now that layers are defined: Full-Stack covers host + process + service; the two lightweight modes focus on host infrastructure:</p>
+<ul>
+<li><strong>Infrastructure Monitoring mode:</strong> essential host metrics without deep application-level insight.</li>
+<li><strong>Discovery mode:</strong> minimal data collection — ideal for <strong>identifying and inventorying hosts</strong> with minimal resource use.</li>
+<li>A common reason to switch modes: <strong>reduce licensing cost</strong> while still monitoring essentials.</li>
+</ul>
+<hr />
+<h2 id="definitions-glossary">Definitions (glossary)</h2>
+<ul>
+<li><strong>Topology:</strong> Arrangement and connections of components.</li>
+<li><strong>Smartscape:</strong> Dynatrace's automatic, real-time, layered topology map.</li>
+<li><strong>Host:</strong> Physical/virtual/cloud instance with an OS (and OneAgent).</li>
+<li><strong>Process:</strong> A running program on a host; contains services.</li>
+<li><strong>Process group:</strong> Processes performing the same function, usually across hosts.</li>
+<li><strong>Service:</strong> Server-side code in a process group that handles requests.</li>
+<li><strong>Database service:</strong> A special service type representing database calls, seen from the calling application.</li>
+<li><strong>Application (Dynatrace):</strong> A user-facing web or mobile front end.</li>
+<li><strong>User action / XHR action / Custom action:</strong> See table above.</li>
+<li><strong>Detection rule:</strong> A rule (domain/URL based) that assigns web traffic to a named application.</li>
+<li><strong>Apdex:</strong> Application Performance Index; a satisfaction rating for sessions and actions.</li>
+</ul>
+<hr />
+<h2 id="practical-examples">Practical examples</h2>
+<ol>
+<li><strong>Smartscape troubleshooting:</strong> Checkout is slow. In Smartscape you follow <em>Checkout app → checkout-service → payment-service → orders-db</em>. The payment service shows normal times, but calls to <code>orders-db</code> jumped from 40 ms to 2 s. You now know where to look.</li>
+<li><strong>Process group redundancy:</strong> <code>nginx</code> runs on web-01, web-02, web-03 → one process group. web-02 restarts for patching; the group still serves traffic.</li>
+<li><strong>"Where's my service?"</strong> You open the last 15 minutes at 3 a.m. and a nightly-export service is missing. It runs at 1 a.m.; widen the timeframe and it appears — services show only when they received requests.</li>
+<li><strong>Detection rules:</strong> traffic for <code>shop.example.com</code> and <code>support.example.com</code> all sits in "My Web Application." Add rules for each domain. From now on they appear as "Shop" and "Support"; last week's data stays in "My Web Application."</li>
+<li><strong>DB visibility:</strong> A team installed OneAgent only on the Oracle server and wonders why they can't see SQL statements. Fix: install Full-Stack on the app servers calling Oracle; set the Oracle host to Infrastructure mode.</li>
+</ol>
+<hr />
+<h2 id="knowledge-check-concepts">Knowledge-check concepts</h2>
+<ul>
+<li>Definition of topology</li>
+<li>Identifying Smartscape layers (and rejecting distractors like firewalls or logs)</li>
+<li>A service = a process handling a request (true)</li>
+<li>Where to install OneAgent for database queries (the calling app server)</li>
+<li>Why switch monitoring modes (reduce licensing cost while keeping essentials)</li>
+<li>Mapping interactions to user / XHR / custom actions</li>
+<li>What the printer analogy illustrates (how components connect and interact)</li>
+</ul>
+<hr />
+<h2 id="review-questions">Review questions</h2>
+<ol>
+<li>Name the five Smartscape layers from top to bottom.</li>
+<li>Why aren't databases a separate Smartscape layer?</li>
+<li>What is the difference between a process and a process group?</li>
+<li>Why might a service not appear in Dynatrace for a given timeframe?</li>
+<li>You want to see slow SQL queries. Where must OneAgent be installed, and in what mode?</li>
+<li>What do you see if OneAgent is installed <em>only</em> on the database host?</li>
+<li>What does Dynatrace call a user-facing browser or mobile front end? Is a back-end batch system one of these?</li>
+<li>Classify: (a) clicking "Add to cart" (b) a dropdown that fetches city names as you type without reloading (c) a manually instrumented "Download invoice" event.</li>
+<li>What happens to old traffic in "My Web Application" after you add a detection rule?</li>
+<li>What is Apdex used for?</li>
+<li>Which mode is best for simply inventorying hosts with minimal overhead?</li>
+</ol>
+<details class="answers"><summary>Show answers</summary>
+<ol>
+<li>Applications, Services, Processes, Hosts, Data centers.</li>
+<li>They're monitored as a special type of service, via calls from application processes.</li>
+<li>A process is one running program; a process group is a set of processes doing the same job, usually across several hosts.</li>
+<li>No requests were received in that timeframe.</li>
+<li>On the application server(s) making the calls, in Full-Stack mode (plus Infrastructure mode on the DB host for its metrics).</li>
+<li>That the database is active, but not what queries were made or by whom.</li>
+<li>An application; no — back-end systems without a UI aren't applications in Dynatrace.</li>
+<li>(a) User action (b) XHR action (c) Custom action.</li>
+<li>It stays there; only new traffic is regrouped.</li>
+<li>Rating user experience for sessions and actions (satisfied vs. frustrated).</li>
+<li>Discovery (Foundation &amp; Discovery) mode.</li>
+</ol>
+</details>
+
+<div class="pager"><a href="02-dynatrace-architecture.html"><small>Previous</small>Dynatrace Architecture</a><a href="04-digital-experience-monitoring.html" style="text-align:right"><small>Next</small>Digital Experience Monitoring (DEM)</a></div>
+<footer>Original study notes based on the Dynatrace University course "Dynatrace Essentials".</footer>
+</main>
+</div>
+</body>
+</html>

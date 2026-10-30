@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 6 — Exploring Problems · Dynatrace Essentials Notes</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+(function(){
+  var r=document.documentElement;
+  try{var t=localStorage.getItem('theme'); if(t) r.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){
+    var b=document.querySelector('.theme-btn'); if(!b) return;
+    b.addEventListener('click',function(){
+      var dark = r.getAttribute('data-theme')==='dark' ||
+        (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var n = dark ? 'light' : 'dark'; r.setAttribute('data-theme',n);
+      try{localStorage.setItem('theme',n);}catch(e){}
+    });
+  });
+})();
+</script>
+
+</head>
+<body>
+<div class="layout">
+<nav class="side" aria-label="Lessons">
+<div class="brand">Dynatrace Essentials Notes</div>
+<ol>
+<li><a href="index.html"><span class="n"></span><span>Home</span></a></li>
+<li><a href="01-introduction-to-dynatrace.html"><span class="n">1</span><span>An Introduction to Dynatrace</span></a></li>
+<li><a href="02-dynatrace-architecture.html"><span class="n">2</span><span>Dynatrace Architecture</span></a></li>
+<li><a href="03-dynatrace-topology.html"><span class="n">3</span><span>Dynatrace Topology (Smartscape)</span></a></li>
+<li><a href="04-digital-experience-monitoring.html"><span class="n">4</span><span>Digital Experience Monitoring (DEM)</span></a></li>
+<li><a href="05-smart-organization.html"><span class="n">5</span><span>Smart Organization</span></a></li>
+<li><a href="06-exploring-problems.html" class="active"><span class="n">6</span><span>Exploring Problems</span></a></li>
+<li><a href="07-analyzing-observability-data.html"><span class="n">7</span><span>Analyzing Your Observability Data</span></a></li>
+<li><a href="08-extending-dynatrace.html"><span class="n">8</span><span>Extending Dynatrace</span></a></li>
+<li><a href="09-cram-sheet-and-final-review.html"><span class="n">★</span><span>Cram Sheet and Final Review</span></a></li>
+</ol>
+</nav>
+<main>
+<div class="topbar"><button class="theme-btn" type="button">Toggle theme</button></div>
+<h1 id="lesson-6-exploring-problems">Lesson 6 — Exploring Problems</h1>
+<h2 id="learning-objectives">Learning objectives</h2>
+<ul>
+<li>Identify how problems are triggered: <strong>anomaly detection</strong>, <strong>static thresholds</strong>, and <strong>auto-adaptive baselines</strong></li>
+<li>Explain the role of <strong>Dynatrace Intelligence</strong> (formerly branded <strong>Davis AI</strong>) in finding root causes and generating insights</li>
+<li>Demonstrate the basics of <strong>troubleshooting</strong> a problem in Dynatrace</li>
+</ul>
+<hr />
+<h2 id="key-topics-and-explanations">Key topics and explanations</h2>
+<h3 id="1-the-story-subtle-slowdowns">1. The story: subtle slowdowns</h3>
+<p>Nothing is "broken" — no red errors, CPU and memory look mostly fine — but checkout response times have crept above normal and users are frustrated. Dynatrace's <strong>baselines</strong> know this isn't normal. Instead of alerting on every blip, it waits for a <strong>real, sustained</strong> deviation, then raises <strong>one problem</strong> that connects the chain: <em>database struggling → app slows → pages delayed</em>, with the database as root cause. No alert storm.</p>
+<h3 id="2-anomalies-problems">2. Anomalies → problems</h3>
+<ul>
+<li>An <strong>anomaly</strong> is a meaningful change signaling something bigger — in Dynatrace terms, a metric <strong>breaching a threshold</strong>.</li>
+<li>When an anomaly is detected, Dynatrace either <strong>creates a new problem</strong> or <strong>attaches it to an existing related problem</strong>. It does <strong>not</strong> open a new problem for every anomaly.</li>
+</ul>
+<p>Two kinds of thresholds:</p>
+<h4 id="static-thresholds">Static thresholds</h4>
+<ul>
+<li>A <strong>fixed value</strong>; crossing above (or, if configured, below) it is an anomaly. E.g., CPU &gt; 90–95%, or traffic dropping below a minimum.</li>
+<li>Dynatrace <strong>doesn't fire on a single spike</strong>: it confirms the condition persists — typically <strong>3 breaches within a 5-minute window</strong> — before raising a problem.</li>
+<li><strong>Used out of the box for infrastructure metrics:</strong> CPU %, memory usage, garbage collection, etc.</li>
+</ul>
+<h4 id="auto-adaptive-thresholds-baselines">Auto-adaptive thresholds (baselines)</h4>
+<ul>
+<li>Dynatrace <strong>learns normal behavior per service/application</strong> and sets tailored expectations (e.g., this service normally responds in 1 s; this app normally has a 1.4% failure rate).</li>
+<li><strong>Timeline:</strong> initial baseline after <strong>2 hours</strong> of monitoring; refined <strong>daily</strong>; a truly healthy baseline after about <strong>1 week</strong> of continuous traffic.</li>
+<li><strong>Trigger rule:</strong> an anomaly is significant when the metric is <strong>at least 50% above baseline</strong> (baseline 1 s → anomaly above <strong>1.5 s</strong>) and the deviation is <strong>sustained</strong>.</li>
+<li><strong>Used for:</strong> response time increases, failure rate increases, and traffic increases/decreases for <strong>applications and services</strong>.</li>
+<li><strong>Restaurant analogy:</strong> a 20-minute wait is a red flag at a fast-food counter but normal at a fine-dining restaurant. Normal depends on the system.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Static threshold</th>
+<th>Auto-adaptive baseline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Value</td>
+<td>Fixed, set by a person/default</td>
+<td>Learned from history, updates automatically</td>
+</tr>
+<tr>
+<td>Default use</td>
+<td>Infrastructure metrics (CPU, memory, GC)</td>
+<td>App/service response time, failure rate, traffic</td>
+</tr>
+<tr>
+<td>Strength</td>
+<td>Simple</td>
+<td>Accurate, fewer false alarms</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>~3 breaches in 5 min</td>
+<td>≥ 50% above baseline, sustained</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-problem-types-by-severity-highest-first">3. Problem types (by severity, highest first)</h3>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>Type</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (most critical)</td>
+<td><strong>Availability</strong></td>
+<td>A host or synthetic monitor is unavailable</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Error</strong></td>
+<td>Rising error/failure rate</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Slowdown</strong></td>
+<td>Page or service getting slower</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Resource</strong></td>
+<td>High CPU or memory</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Custom</strong></td>
+<td>User-defined; can be set to any severity, or to "custom" (lowest priority)</td>
+</tr>
+</tbody>
+</table>
+<p>Each type has its own icon. Other <strong>event types</strong> (info, monitoring unavailable, process restart, deployment change, etc.) can appear <strong>inside</strong> problems for context but are <strong>not problem types</strong>.</p>
+<blockquote>
+<p>Memory aid: <strong>"All Errors Slow Resources Customarily"</strong> — Availability, Error, Slowdown, Resource, Custom.</p>
+</blockquote>
+<h3 id="4-exploring-a-problem">4. Exploring a problem</h3>
+<p>An open problem shows:</p>
+<ul>
+<li><strong>Who</strong> is impacted (users)</li>
+<li><strong>What</strong> is impacted (entities)</li>
+<li><strong>Why</strong> it happened (suggested root cause)</li>
+</ul>
+<p>Dynatrace <strong>suggests</strong> the root cause — you should still investigate and <strong>validate</strong>.</p>
+<h3 id="5-root-cause-analysis-and-alert-storms">5. Root cause analysis and alert storms</h3>
+<p>Using <strong>Smartscape topology</strong>, Dynatrace knows how components depend on each other and <strong>groups related anomalies into one problem</strong>.</p>
+<p>Example: DB has CPU trouble → app servers depending on it slow down → web servers waiting on the apps slow down. Traditional monitoring = three (or thirty) alerts and tickets: an <strong>alert storm</strong>. Dynatrace = <strong>one problem</strong>, root cause = <strong>database</strong>.</p>
+<p><strong>Analogy:</strong> after a storm the outage is obvious; finding the actual downed power line takes investigation. Dynatrace finds the "fallen line" fast.</p>
+<h3 id="6-tools-for-analyzing-problems">6. Tools for analyzing problems</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Failure analysis</strong></td>
+<td>Spikes in application errors</td>
+</tr>
+<tr>
+<td><strong>Response time hotspots</strong></td>
+<td>Which services/methods cause slowdowns</td>
+</tr>
+<tr>
+<td><strong>Distributed traces</strong></td>
+<td>Breaking a request down to see where delay happens</td>
+</tr>
+<tr>
+<td><strong>Business impact analysis</strong></td>
+<td>Which users were affected and how</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Troubleshooting approach:</strong></p>
+<ol>
+<li><strong>Follow the red lines</strong> in the problem view toward the root cause.</li>
+<li><strong>Start broad</strong> — look at impacted entities and overall health first, then move to the suggested root-cause entity (don't jump straight into code-level data).</li>
+<li><strong>Narrow down</strong> — Response Time Hotspots for slowdowns; Failure (rate) Analysis for errors.</li>
+</ol>
+<h3 id="7-dynatrace-intelligence-davis-ai">7. Dynatrace Intelligence (Davis AI)</h3>
+<p>The AI engine behind detection and analysis. Capabilities by category:</p>
+<ul>
+<li><strong>Causal correlation analysis:</strong> detects anomalies, determines root causes, groups related problems, understands topology.</li>
+<li><strong>Seasonal baseline:</strong> creates auto-adaptive thresholds and learns <strong>seasonal</strong> behavior of metrics.</li>
+<li><strong>Forecast analysis:</strong> predicts future metric values in <strong>dashboards and notebooks</strong>.</li>
+</ul>
+<blockquote>
+<p>Naming note: the course body calls it <strong>Dynatrace Intelligence</strong>; the wrap-up and resources call it <strong>Davis AI</strong>. Treat them as the same engine.</p>
+</blockquote>
+<h3 id="8-problem-settings">8. Problem settings</h3>
+<ul>
+<li><strong>Anomaly detection settings:</strong> tune when/how anomalies trigger; set <strong>globally or per entity</strong>.</li>
+<li><strong>Alerting profiles:</strong> control <strong>which</strong> problems trigger notifications.</li>
+<li><strong>Problem notifications:</strong> <strong>how</strong> alerts are delivered — email, Slack, PagerDuty, etc. (Also possible via <strong>Workflows</strong>, covered later.)</li>
+<li><strong>Maintenance windows:</strong> suppress alerts and/or specific synthetic tests during <strong>planned downtime</strong> to avoid false alarms.</li>
+</ul>
+<hr />
+<h2 id="definitions-glossary">Definitions (glossary)</h2>
+<ul>
+<li><strong>Anomaly:</strong> A metric breaching a threshold in a meaningful way.</li>
+<li><strong>Problem:</strong> Dynatrace's grouped representation of one or more related anomalies, with impact and root cause.</li>
+<li><strong>Static threshold:</strong> A fixed limit.</li>
+<li><strong>Baseline / auto-adaptive threshold:</strong> A learned "normal" per entity.</li>
+<li><strong>Alert storm:</strong> A flood of separate alerts/tickets for one underlying issue.</li>
+<li><strong>Root cause:</strong> The underlying entity/condition causing the chain of symptoms.</li>
+<li><strong>Alerting profile:</strong> Filter deciding which problems notify whom.</li>
+<li><strong>Maintenance window:</strong> A scheduled period where alerting is suppressed.</li>
+<li><strong>Dynatrace Intelligence / Davis AI:</strong> Dynatrace's AI engine for baselining, detection, grouping, root cause, and forecasting.</li>
+</ul>
+<hr />
+<h2 id="practical-examples">Practical examples</h2>
+<ol>
+<li><strong>Baseline math:</strong> service baseline 400 ms → anomaly once sustained above <strong>600 ms</strong>. Baseline 2 s → above <strong>3 s</strong>.</li>
+<li><strong>Static vs. baseline choice:</strong> Disk-full alert on a log server → static threshold (e.g., &gt; 90%). Checkout response time → baseline (normal differs by service and time of day).</li>
+<li><strong>Reading a problem:</strong> Problem "Response time degradation — Checkout service." Impacted: 3 services, 1 application, ~1,200 users. Root cause: <code>orders-db</code> host CPU saturation. Start broad (confirm impact), open the DB host (confirm CPU), then use Response Time Hotspots on checkout to verify time is spent in DB calls.</li>
+<li><strong>Maintenance window:</strong> You patch servers Saturday 01:00–03:00. Set a maintenance window to suppress alerts and pause the login synthetic during that time.</li>
+<li><strong>Routing alerts:</strong> An alerting profile sends only Availability and Error problems tagged <code>Tier: Critical</code> to PagerDuty; Resource problems go to a Slack channel.</li>
+</ol>
+<hr />
+<h2 id="knowledge-check-concepts">Knowledge-check concepts</h2>
+<ul>
+<li>Whether Dynatrace creates a new problem for every anomaly (no — related anomalies attach to existing problems)</li>
+<li>Recognizing problem types (Availability, Error, Slowdown, Resource, Custom) vs. distractors</li>
+<li>Static vs. auto-adaptive thresholds (adaptive adjusts to normal behavior)</li>
+<li>Default baseline deviation needed for an anomaly (<strong>50%</strong>)</li>
+<li>How Dynatrace groups anomalies into problems and uses AI to find root cause</li>
+</ul>
+<hr />
+<h2 id="review-questions">Review questions</h2>
+<ol>
+<li>What must happen before Dynatrace can create a problem?</li>
+<li>A related anomaly appears while a problem is already open. What does Dynatrace do?</li>
+<li>How many breaches, in what window, typically confirm a static threshold problem?</li>
+<li>How long until a baseline first exists, and how long until it's considered healthy?</li>
+<li>A service's baseline is 800 ms. Above what value is a sustained anomaly flagged?</li>
+<li>Which metrics use static thresholds by default? Which use baselines?</li>
+<li>List the five problem types from most to least severe.</li>
+<li>Is "deployment change" a problem type?</li>
+<li>What is an alert storm, and how does Dynatrace avoid it?</li>
+<li>Which tool would you use first for (a) a slowdown (b) an error spike (c) "how many customers were hit?"</li>
+<li>Describe the three-step troubleshooting approach.</li>
+<li>What are the three capability categories of Dynatrace Intelligence?</li>
+<li>What's the difference between an alerting profile and a problem notification?</li>
+<li>Why use a maintenance window?</li>
+</ol>
+<details class="answers"><summary>Show answers</summary>
+<ol>
+<li>An anomaly must be detected (a threshold breach).</li>
+<li>Links it to the existing problem.</li>
+<li>About 3 breaches within 5 minutes.</li>
+<li>2 hours; about 1 week.</li>
+<li>1,200 ms (50% above).</li>
+<li>Static: infrastructure (CPU, memory, GC). Baselines: response time, failure rate, traffic for apps/services.</li>
+<li>Availability, Error, Slowdown, Resource, Custom.</li>
+<li>No — it's an event type that can provide context within a problem.</li>
+<li>Many separate alerts for one underlying issue; Dynatrace uses topology to group them into one problem with a root cause.</li>
+<li>(a) Response Time Hotspots (b) Failure Analysis (c) Business Impact Analysis.</li>
+<li>Follow the red lines; start broad with impacted entities; narrow down with the specific analysis tool.</li>
+<li>Causal correlation analysis, seasonal baseline, forecast analysis.</li>
+<li>Alerting profile = <em>which</em> problems notify; problem notification = <em>how/where</em> they are sent.</li>
+<li>To suppress alerts (and optionally synthetics) during planned downtime and avoid false alarms.</li>
+</ol>
+</details>
+
+<div class="pager"><a href="05-smart-organization.html"><small>Previous</small>Smart Organization</a><a href="07-analyzing-observability-data.html" style="text-align:right"><small>Next</small>Analyzing Your Observability Data</a></div>
+<footer>Original study notes based on the Dynatrace University course "Dynatrace Essentials".</footer>
+</main>
+</div>
+</body>
+</html>

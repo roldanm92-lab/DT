@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 2 — Dynatrace Architecture · Dynatrace Essentials Notes</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+(function(){
+  var r=document.documentElement;
+  try{var t=localStorage.getItem('theme'); if(t) r.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){
+    var b=document.querySelector('.theme-btn'); if(!b) return;
+    b.addEventListener('click',function(){
+      var dark = r.getAttribute('data-theme')==='dark' ||
+        (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var n = dark ? 'light' : 'dark'; r.setAttribute('data-theme',n);
+      try{localStorage.setItem('theme',n);}catch(e){}
+    });
+  });
+})();
+</script>
+
+</head>
+<body>
+<div class="layout">
+<nav class="side" aria-label="Lessons">
+<div class="brand">Dynatrace Essentials Notes</div>
+<ol>
+<li><a href="index.html"><span class="n"></span><span>Home</span></a></li>
+<li><a href="01-introduction-to-dynatrace.html"><span class="n">1</span><span>An Introduction to Dynatrace</span></a></li>
+<li><a href="02-dynatrace-architecture.html" class="active"><span class="n">2</span><span>Dynatrace Architecture</span></a></li>
+<li><a href="03-dynatrace-topology.html"><span class="n">3</span><span>Dynatrace Topology (Smartscape)</span></a></li>
+<li><a href="04-digital-experience-monitoring.html"><span class="n">4</span><span>Digital Experience Monitoring (DEM)</span></a></li>
+<li><a href="05-smart-organization.html"><span class="n">5</span><span>Smart Organization</span></a></li>
+<li><a href="06-exploring-problems.html"><span class="n">6</span><span>Exploring Problems</span></a></li>
+<li><a href="07-analyzing-observability-data.html"><span class="n">7</span><span>Analyzing Your Observability Data</span></a></li>
+<li><a href="08-extending-dynatrace.html"><span class="n">8</span><span>Extending Dynatrace</span></a></li>
+<li><a href="09-cram-sheet-and-final-review.html"><span class="n">★</span><span>Cram Sheet and Final Review</span></a></li>
+</ol>
+</nav>
+<main>
+<div class="topbar"><button class="theme-btn" type="button">Toggle theme</button></div>
+<h1 id="lesson-2-dynatrace-architecture">Lesson 2 — Dynatrace Architecture</h1>
+<h2 id="learning-objectives">Learning objectives</h2>
+<ul>
+<li>Explain what <strong>Dynatrace SaaS</strong> means and why it removes infrastructure burden</li>
+<li>Explain what <strong>Grail</strong> is, how it processes data, and how <strong>buckets</strong> organize it</li>
+<li>Describe <strong>Dynatrace Apps</strong> (prebuilt vs. custom-built)</li>
+<li>Identify OneAgent's <strong>monitoring modes</strong> (Full-Stack, Infrastructure, Foundation &amp; Discovery) and when to use each</li>
+<li>Describe the <strong>platforms and environments</strong> OneAgent supports</li>
+</ul>
+<hr />
+<h2 id="key-topics-and-explanations">Key topics and explanations</h2>
+<h3 id="1-the-worry-this-lesson-addresses">1. The worry this lesson addresses</h3>
+<p>A new user wonders: <em>Is my laptop powerful enough? Where does all the data go? Will OneAgent hog my servers' resources processing everything?</em></p>
+<p><strong>Answer:</strong> No. Dynatrace is SaaS — storage, processing, and analysis happen in Dynatrace's cloud. OneAgent's job is mainly to <strong>collect and ship</strong> data; the platform does the heavy lifting. You need only a browser and an internet connection.</p>
+<h3 id="2-dynatrace-as-saas">2. Dynatrace as SaaS</h3>
+<ul>
+<li><strong>SaaS (Software as a Service):</strong> software hosted in the cloud and used over the internet instead of installed and run on your own machines.</li>
+<li>The vendor handles <strong>updates, maintenance, and security</strong>; you focus on using it.</li>
+<li>Everyday SaaS examples: Gmail, Google Drive, Spotify in the browser.</li>
+</ul>
+<h3 id="3-grail-the-data-store-and-analytics-engine">3. Grail — the data store and analytics engine</h3>
+<ul>
+<li>Data volumes keep growing, and users still expect fast answers. Grail is Dynatrace's answer.</li>
+<li>Dynatrace describes Grail as a <strong>causational data lakehouse</strong> with a <strong>massively parallel processing (MPP)</strong> analytics engine.</li>
+<li><strong>Plain English:</strong> when you query data, Grail recruits dozens or hundreds of helper servers <em>in parallel</em> to find, analyze, organize, and return exactly what you asked for — and it can scale the number of helpers to meet demand.</li>
+<li><strong>Analogy:</strong> the store owner packing every order alone vs. a team fulfilling orders together, much faster.</li>
+<li>Grail stores and connects all collected data — logs, metrics, events, user interactions — so Dynatrace can "connect the dots."</li>
+</ul>
+<h3 id="4-buckets">4. Buckets</h3>
+<p>All data in Grail is assigned to <strong>buckets</strong> based on type and purpose. Buckets control:</p>
+<ol>
+<li><strong>Retention</strong> — how long data is kept</li>
+<li><strong>Access</strong> — who can see it</li>
+<li><strong>Organization</strong> — how data is grouped within Dynatrace</li>
+</ol>
+<p><strong>Analogy:</strong> drawers in a filing cabinet; some drawers need a key (permission) to open.</p>
+<p><strong>Example from the lesson:</strong> Team A's app data goes to bucket <code>App_A</code>, Team B's to <code>App_B</code>. Each team sees only its own bucket. Routine logs might go to a 35-day bucket and more important logs to a 100-day bucket.</p>
+<p><strong>Why limit retention?</strong></p>
+<ul>
+<li><strong>Cost</strong> — more retained data consumes more licensing.</li>
+<li><strong>Security</strong> — separating data by sensitivity and access needs.</li>
+</ul>
+<h3 id="5-dynatrace-apps">5. Dynatrace Apps</h3>
+<p>Interactive applications that run <strong>inside</strong> the Dynatrace platform to extend functionality, visualize data, and build workflows.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Prebuilt apps</strong></td>
+<td>Ready to use out of the box</td>
+<td>Analyzing user sessions, service performance, log exploration; e.g. <em>Infrastructure &amp; Operations</em>, <em>Problems</em></td>
+</tr>
+<tr>
+<td><strong>Custom-built apps</strong></td>
+<td>Built by your team from scratch for specific business/technical needs; you control what's shown and how</td>
+<td>A team-specific app for an internal process</td>
+</tr>
+</tbody>
+</table>
+<p>Note: the word "application" means two things in this course — the <em>monitored</em> application (Lesson 1) vs. a <em>Dynatrace App</em> running in the platform.</p>
+<h3 id="6-oneagent-monitoring-modes">6. OneAgent monitoring modes</h3>
+<p>OneAgent is installed on cloud or on-premises hosts to automatically collect observability data. Not every system needs maximum coverage; lower-priority systems can use a lighter mode to save cost.</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Host metrics</th>
+<th>Process-level data</th>
+<th>Service traces / profiling</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Full-Stack</strong></td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+<td>Default recommendation; business-critical apps</td>
+</tr>
+<tr>
+<td><strong>Infrastructure</strong></td>
+<td>✔</td>
+<td>✔</td>
+<td>✘</td>
+<td>Database servers and other systems where service tracing isn't needed</td>
+</tr>
+<tr>
+<td><strong>Foundation &amp; Discovery</strong></td>
+<td>✔ (essential only)</td>
+<td>✘</td>
+<td>✘</td>
+<td>Kiosks, POS terminals, endpoints where you just need to confirm availability</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Details from the wrap-up:</strong></p>
+<ul>
+<li><strong>Full-Stack:</strong> host + process metrics, traces and profiling from the service layer; opt-in features like log management and application security.</li>
+<li><strong>Infrastructure:</strong> host and process metrics; no service-layer tracing or profiling; optional features (e.g. log management) can be enabled.</li>
+<li><strong>Foundation &amp; Discovery:</strong> lightest footprint; essential host metrics plus <strong>topology</strong> and <strong>host criticality</strong> data. Logs and advanced features are <em>not on by default</em> and must be enabled manually.</li>
+</ul>
+<blockquote>
+<p>⚠️ Heads-up: the lesson body says Discovery mode captures "metrics and logs about the host," but the wrap-up says logs must be manually activated in Foundation &amp; Discovery. For exam purposes, remember: <strong>lightest mode, host-level only, no process data, no traces; logs not on by default.</strong></p>
+</blockquote>
+<p><strong>The layers (previewed here, detailed in Lesson 3):</strong> host → process → service. Each step up in mode adds a layer: Discovery = host; Infrastructure = host + process; Full-Stack = host + process + service.</p>
+<h3 id="7-platform-and-technology-support">7. Platform and technology support</h3>
+<ul>
+<li>OneAgent supports common server OSes (<strong>Windows, Linux</strong>) and cloud/container platforms (<strong>AWS, Azure, Google Cloud, Kubernetes</strong>, and more).</li>
+<li>Each platform has its own install steps — you don't need to memorize them.</li>
+<li>When unsure, check the Dynatrace documentation for supported technologies.</li>
+</ul>
+<hr />
+<h2 id="definitions-glossary">Definitions (glossary)</h2>
+<ul>
+<li><strong>SaaS:</strong> Cloud-hosted software accessed through a browser; the vendor manages infrastructure, updates, and security.</li>
+<li><strong>Grail:</strong> Dynatrace's data lakehouse with a massively parallel analytics engine that stores, connects, and analyzes observability data in real time.</li>
+<li><strong>MPP (massively parallel processing):</strong> Splitting a query across many servers working simultaneously.</li>
+<li><strong>Bucket:</strong> A Grail storage container that controls retention period, access permissions, and organization of data.</li>
+<li><strong>Retention period:</strong> How long data is kept in a bucket before deletion.</li>
+<li><strong>Dynatrace App:</strong> An interactive application running inside the Dynatrace platform (prebuilt or custom).</li>
+<li><strong>Monitoring mode:</strong> The OneAgent setting that determines how much data it collects (Full-Stack, Infrastructure, Foundation &amp; Discovery).</li>
+</ul>
+<hr />
+<h2 id="practical-examples">Practical examples</h2>
+<ol>
+<li><strong>Choosing modes for a retail company:</strong>
+   - Online checkout service → Full-Stack (need traces to debug slow purchases)
+   - Back-end PostgreSQL servers → Infrastructure (host/process health, no service tracing needed)
+   - 600 in-store POS terminals → Foundation &amp; Discovery (just need to know they're up)</li>
+<li><strong>Designing buckets:</strong> A bank keeps general app logs in a 35-day bucket for all engineers, and audit/security logs in a long-retention bucket only the security team can read.</li>
+<li><strong>SaaS benefit in practice:</strong> A new analyst on a modest laptop opens Dynatrace in a browser and queries a week of logs; the heavy work happens in Grail, not on the laptop or the monitored servers.</li>
+</ol>
+<hr />
+<h2 id="knowledge-check-concepts">Knowledge-check concepts</h2>
+<ul>
+<li>What makes Dynatrace SaaS (runs in the cloud, accessed via browser)</li>
+<li>OneAgent's main role (gathering data, not storing it locally or building dashboards)</li>
+<li>Recognizing which items are Dynatrace Apps</li>
+<li>Grail's purpose (store, connect, and analyze observability data in real time)</li>
+<li>What a custom-built app is (built by your team for specific needs, running inside the platform)</li>
+</ul>
+<hr />
+<h2 id="review-questions">Review questions</h2>
+<ol>
+<li>Name three things a SaaS vendor handles so you don't have to.</li>
+<li>Where does the heavy processing of Dynatrace data happen — on the OneAgent host or elsewhere?</li>
+<li>Explain Grail's MPP approach using the store-staff analogy.</li>
+<li>List the three things buckets control.</li>
+<li>Give two reasons to keep retention periods short.</li>
+<li>Two teams must not see each other's data. How would you use buckets?</li>
+<li>What's the difference between a prebuilt and a custom-built Dynatrace App?</li>
+<li>Which OneAgent mode would you choose for: (a) a payment API, (b) a MySQL server, (c) a digital-signage kiosk?</li>
+<li>Which monitoring mode is the only one that captures distributed traces?</li>
+<li>Name four platforms OneAgent supports.</li>
+<li>True or false: a custom-built Dynatrace App runs outside the Dynatrace platform.</li>
+</ol>
+<details class="answers"><summary>Show answers</summary>
+<ol>
+<li>Updates, maintenance, security (also hosting/infrastructure).</li>
+<li>In the Dynatrace SaaS platform (Grail); OneAgent mainly collects and sends.</li>
+<li>Instead of one worker doing everything, many helper servers split the job and work at once, so large queries finish fast; more helpers can be added as demand grows.</li>
+<li>Retention, access, organization.</li>
+<li>Lower licensing cost; better security/data separation.</li>
+<li>Route each team's data to its own bucket and grant each team permission only to its bucket.</li>
+<li>Prebuilt apps ship ready to use; custom apps are built by your team for unique needs.</li>
+<li>(a) Full-Stack (b) Infrastructure (c) Foundation &amp; Discovery.</li>
+<li>Full-Stack.</li>
+<li>Any four: Windows, Linux, AWS, Azure, Google Cloud, Kubernetes.</li>
+<li>False — Dynatrace Apps run within the platform.</li>
+</ol>
+</details>
+
+<div class="pager"><a href="01-introduction-to-dynatrace.html"><small>Previous</small>An Introduction to Dynatrace</a><a href="03-dynatrace-topology.html" style="text-align:right"><small>Next</small>Dynatrace Topology (Smartscape)</a></div>
+<footer>Original study notes based on the Dynatrace University course "Dynatrace Essentials".</footer>
+</main>
+</div>
+</body>
+</html>

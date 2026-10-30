@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 1 — An Introduction to Dynatrace · Dynatrace Essentials Notes</title>
+<link rel="stylesheet" href="style.css">
+
+<script>
+(function(){
+  var r=document.documentElement;
+  try{var t=localStorage.getItem('theme'); if(t) r.setAttribute('data-theme',t);}catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){
+    var b=document.querySelector('.theme-btn'); if(!b) return;
+    b.addEventListener('click',function(){
+      var dark = r.getAttribute('data-theme')==='dark' ||
+        (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var n = dark ? 'light' : 'dark'; r.setAttribute('data-theme',n);
+      try{localStorage.setItem('theme',n);}catch(e){}
+    });
+  });
+})();
+</script>
+
+</head>
+<body>
+<div class="layout">
+<nav class="side" aria-label="Lessons">
+<div class="brand">Dynatrace Essentials Notes</div>
+<ol>
+<li><a href="index.html"><span class="n"></span><span>Home</span></a></li>
+<li><a href="01-introduction-to-dynatrace.html" class="active"><span class="n">1</span><span>An Introduction to Dynatrace</span></a></li>
+<li><a href="02-dynatrace-architecture.html"><span class="n">2</span><span>Dynatrace Architecture</span></a></li>
+<li><a href="03-dynatrace-topology.html"><span class="n">3</span><span>Dynatrace Topology (Smartscape)</span></a></li>
+<li><a href="04-digital-experience-monitoring.html"><span class="n">4</span><span>Digital Experience Monitoring (DEM)</span></a></li>
+<li><a href="05-smart-organization.html"><span class="n">5</span><span>Smart Organization</span></a></li>
+<li><a href="06-exploring-problems.html"><span class="n">6</span><span>Exploring Problems</span></a></li>
+<li><a href="07-analyzing-observability-data.html"><span class="n">7</span><span>Analyzing Your Observability Data</span></a></li>
+<li><a href="08-extending-dynatrace.html"><span class="n">8</span><span>Extending Dynatrace</span></a></li>
+<li><a href="09-cram-sheet-and-final-review.html"><span class="n">★</span><span>Cram Sheet and Final Review</span></a></li>
+</ol>
+</nav>
+<main>
+<div class="topbar"><button class="theme-btn" type="button">Toggle theme</button></div>
+<h1 id="lesson-1-an-introduction-to-dynatrace">Lesson 1 — An Introduction to Dynatrace</h1>
+<h2 id="learning-objectives">Learning objectives</h2>
+<p>By the end of this lesson you should be able to:</p>
+<ul>
+<li>Explain what problem Dynatrace solves and why it exists</li>
+<li>Distinguish <strong>application observability</strong> from <strong>application monitoring</strong></li>
+<li>Explain <strong>tool consolidation</strong> and its benefits</li>
+<li>Describe at a high level how Dynatrace collects data: <strong>OneAgent</strong>, <strong>ActiveGate</strong>, cloud integrations, and the Dynatrace platform</li>
+<li>Name the <strong>three pillars of observability</strong> (metrics, logs, traces) and what each tells you</li>
+<li>Explain what <strong>root cause analysis</strong> does and why it matters</li>
+</ul>
+<h2 id="course-map-where-this-lesson-fits">Course map (where this lesson fits)</h2>
+<p>The Essentials course has 8 lessons plus a certificate exam:</p>
+<ol>
+<li>Introduction to Dynatrace ← <em>you are here</em></li>
+<li>Dynatrace Architecture</li>
+<li>Dynatrace Topology (Smartscape)</li>
+<li>Digital Experience Monitoring (RUM, synthetics)</li>
+<li>Smart Organization (tags, host groups)</li>
+<li>Exploring Problems</li>
+<li>Analyzing Your Observability Data (dashboards, data exploration)</li>
+<li>Extending Dynatrace (extensions)</li>
+</ol>
+<hr />
+<h2 id="key-topics-and-explanations">Key topics and explanations</h2>
+<h3 id="1-the-motivating-story-the-telescope-store">1. The motivating story (the telescope store)</h3>
+<p>A small store launches a website, runs a big sale, and the site falls over: slow pages, failed checkouts, stuck orders. The owner has <em>no idea why</em>. After installing Dynatrace, two causes surface within hours: <strong>servers lacking capacity</strong> for the traffic, and <strong>code consuming too much memory</strong> that crashes checkout under load.</p>
+<p><strong>Takeaway:</strong> Online success isn't just attracting visitors; it's making sure the system works when they arrive. Without visibility, you lose both revenue and customer trust every hour you're down.</p>
+<h3 id="2-what-application-observability-means">2. What "application observability" means</h3>
+<ul>
+<li><strong>Application</strong> = software that performs specific tasks to support a business. Websites are the visible example, but organizations run dozens to hundreds of internal apps too (payroll, inventory) that the public never sees.</li>
+<li><strong>Observability</strong> = the ability to understand an application's <strong>health, performance, and behavior from the inside out</strong>, so that when something goes wrong you can find <em>why</em> and fix it quickly (before users give up and leave).</li>
+</ul>
+<h3 id="3-monitoring-vs-observability-a-frequently-tested-distinction">3. Monitoring vs. observability (a frequently tested distinction)</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Monitoring</th>
+<th>Observability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What it gives you</td>
+<td>Symptoms (slow response, rising error rate)</td>
+<td>Meaning and context behind the symptoms</td>
+</tr>
+<tr>
+<td>Typical form</td>
+<td>Numbers on a dashboard, threshold alerts</td>
+<td>Interpreted behavior, patterns over time, actionable insight</td>
+</tr>
+<tr>
+<td>Question answered</td>
+<td>"Is something wrong?"</td>
+<td>"What's wrong, why, and what should I do?"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The smartwatch analogy used in the course:</strong></p>
+<ul>
+<li><em>Monitoring:</em> "Your heart rate went above 120 BPM" — a single threshold crossed.</li>
+<li><em>Observability:</em> "You've been inactive — time to stand" (interpreting real-time behavior in context) or "You've averaged low sleep this week" (patterns over time → meaningful advice).</li>
+</ul>
+<h3 id="4-tool-consolidation">4. Tool consolidation</h3>
+<p><strong>Traditional setup:</strong> a separate tool for each concern — infrastructure monitoring, log collection, network performance, user experience. Each one must be installed, configured, updated, and licensed, and your team must jump between interfaces to piece together what's happening.</p>
+<p><strong>Tool consolidation</strong> = replacing many single-purpose tools with one unified platform. Dynatrace brings these capabilities together.</p>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Less complexity and lower operational overhead</li>
+<li>Less licensing, maintenance, and setup effort</li>
+<li>Time and people freed up for improving performance, user experience, and the business</li>
+</ul>
+<p><strong>Analogy:</strong> a smartphone replaced the separate camera, GPS, calculator, etc.</p>
+<h3 id="5-how-dynatrace-collects-data-high-level">5. How Dynatrace collects data (high level)</h3>
+<h4 id="oneagent">OneAgent</h4>
+<ul>
+<li>A piece of software you install on the systems you want to observe.</li>
+<li>Once installed, it <strong>automatically</strong> captures logs, metrics, traces, events, and more, and sends them to Dynatrace.</li>
+<li>Installation is simple: download, follow the steps, and the host is observable.</li>
+</ul>
+<h4 id="activegate">ActiveGate</h4>
+<ul>
+<li>The problem it solves: each OneAgent host would otherwise need its own outbound path through your firewall to reach Dynatrace. With 5 servers that's annoying; with thousands it's unmanageable and risky.</li>
+<li><strong>ActiveGate acts as a secure proxy/relay</strong>: OneAgents send their data to the ActiveGate, which forwards it to the Dynatrace platform.</li>
+<li>Course themes on ActiveGate: <strong>firewall friendly</strong>, <strong>encrypted data</strong>, <strong>scalable routing</strong>.</li>
+</ul>
+<p><strong>The overseas-mail analogy:</strong></p>
+<ul>
+<li><em>Without ActiveGate:</em> everyone flies overseas personally to hand-deliver their own letter (every OneAgent connects directly to Dynatrace).</li>
+<li><em>With ActiveGate:</em> everyone drops letters at the post office, which sorts, secures, and ships them together.</li>
+</ul>
+<p><strong>Why it matters:</strong></p>
+<ul>
+<li><strong>Security</strong> — traffic is one-way outbound; nothing needs to come in.</li>
+<li><strong>Performance</strong> — less traffic, cleaner flow.</li>
+<li><strong>Manageability</strong> — no special firewall openings for every individual system.</li>
+<li><strong>Control</strong> — you decide what leaves your network and when.</li>
+</ul>
+<h4 id="cloud-integrations-and-the-platform">Cloud integrations and the platform</h4>
+<p>The course also names <strong>cloud integrations</strong> (collecting data from cloud providers) and the <strong>Dynatrace platform</strong> itself (where data lands and is analyzed) as parts of the high-level picture. Lesson 2 covers these in depth.</p>
+<h3 id="6-the-three-pillars-of-observability">6. The three pillars of observability</h3>
+<p>Each pillar offers insight alone; together they tell the full story.</p>
+<table>
+<thead>
+<tr>
+<th>Pillar</th>
+<th>What it is</th>
+<th>What it's good for</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Metrics</strong></td>
+<td>Numeric measurements collected over time</td>
+<td>Big-picture health; often the <em>first</em> signal that something changed</td>
+<td>CPU %, memory, response time, error rate, active users</td>
+</tr>
+<tr>
+<td><strong>Logs</strong></td>
+<td>Time-stamped records of events</td>
+<td>The written "story": who did what, when, and what the system said</td>
+<td>Successful login, failed payment, error message</td>
+</tr>
+<tr>
+<td><strong>Traces</strong></td>
+<td>The path of a single request through the system</td>
+<td>Showing <em>where time is spent</em> across components</td>
+<td>Click "Buy Now": 1s web server → 1s middleware → <strong>4s database</strong> (look there!)</td>
+</tr>
+</tbody>
+</table>
+<p>Analogy for logs: a ship captain's log or a nurse's chart ("At 10:32 the patient's blood pressure was low").</p>
+<p><strong>Beyond the three pillars</strong>, Dynatrace also captures <strong>security events</strong>, <strong>business events</strong>, and <strong>deployment-related events</strong> out of the box.</p>
+<h3 id="7-root-cause-determination-analysis">7. Root cause determination / analysis</h3>
+<ul>
+<li>A symptom ("the site is slow") has many possible causes: a buggy release, a traffic spike, a network issue between systems.</li>
+<li>Like a doctor diagnosing a runny nose as a cold rather than allergies, <strong>root cause analysis identifies <em>why</em> a problem is happening</strong>, so you can fix the right thing.</li>
+<li><strong>Course example:</strong> a "free star map with every telescope" promo goes live and the site slows. Panic says "kill the promo." Dynatrace shows the actual cause is a traffic surge — the promo is <em>working</em>. Fix: add server capacity. No guessing, no pulled promotion.</li>
+</ul>
+<hr />
+<h2 id="definitions-glossary">Definitions (glossary)</h2>
+<ul>
+<li><strong>Application:</strong> Software that performs specific tasks to support a business.</li>
+<li><strong>Application monitoring:</strong> Watching metrics/thresholds to detect symptoms.</li>
+<li><strong>Application observability:</strong> Understanding an application's health, performance, and behavior from the inside out, with context that makes data actionable.</li>
+<li><strong>Tool consolidation:</strong> Replacing multiple specialized monitoring tools with one unified platform.</li>
+<li><strong>OneAgent:</strong> Dynatrace's installable agent that automatically collects logs, metrics, traces, and events from a host.</li>
+<li><strong>ActiveGate:</strong> A secure proxy that receives data from many OneAgents and forwards it to Dynatrace, simplifying firewall rules and routing.</li>
+<li><strong>Metrics:</strong> Numeric measurements over time.</li>
+<li><strong>Logs:</strong> Time-stamped event records.</li>
+<li><strong>Traces:</strong> The end-to-end path of a single request, with timing per component.</li>
+<li><strong>Root cause analysis:</strong> Automatically identifying the underlying reason for a problem rather than just its symptoms.</li>
+</ul>
+<hr />
+<h2 id="practical-examples">Practical examples</h2>
+<ol>
+<li><strong>Reading a trace:</strong> Checkout takes 6 s. The trace shows 0.2 s in the frontend, 0.3 s in the payment service, 5.5 s in an inventory database query. → Investigate that query or its database host, not the frontend.</li>
+<li><strong>Metric first, then logs:</strong> A dashboard metric shows error rate jumping from 0.5% to 8% at 14:05. Filter logs for 14:00–14:10 and find repeated "connection pool exhausted" messages. Metrics told you <em>when</em>; logs told you <em>what</em>.</li>
+<li><strong>ActiveGate sizing in practice:</strong> 400 servers in a private data center. Instead of 400 firewall exceptions to the internet, you allow those servers to talk to a couple of internal ActiveGates, and only the ActiveGates get an outbound rule to Dynatrace.</li>
+<li><strong>Monitoring vs. observability:</strong> "CPU on web-03 is 95%" is monitoring. "Response time on checkout degraded because web-03's CPU is saturated after the 14:00 deployment, affecting 2,300 users" is observability.</li>
+</ol>
+<hr />
+<h2 id="knowledge-check-concepts-what-the-lesson-quiz-tests">Knowledge-check concepts (what the lesson quiz tests)</h2>
+<ul>
+<li>The purpose of root cause analysis</li>
+<li>Identifying the three pillars of observability (and rejecting distractors such as alerts or firewalls)</li>
+<li>How ActiveGate simplifies OneAgent traffic</li>
+<li>What a trace does (versus what metrics do)</li>
+<li>Benefits of tool consolidation (and rejecting the idea that multiple specialized tools are <em>required</em>)</li>
+</ul>
+<hr />
+<h2 id="review-questions">Review questions</h2>
+<ol>
+<li>In one sentence, how does observability go beyond monitoring?</li>
+<li>Give one smartwatch example of monitoring and one of observability, and explain the difference.</li>
+<li>List three costs of running separate tools for infrastructure, logs, network, and user experience.</li>
+<li>What does OneAgent collect, and what do you have to do to start collecting?</li>
+<li>Why would a company with 1,000 servers want an ActiveGate? Give two reasons.</li>
+<li>Explain the post-office analogy for ActiveGate in your own words.</li>
+<li>Which pillar would you use to answer each question?
+   a) "Did average memory usage rise over the last week?"
+   b) "What exactly did the payment service report when it failed at 09:14?"
+   c) "Which component made this specific checkout request slow?"</li>
+<li>Name three types of data Dynatrace captures beyond metrics, logs, and traces.</li>
+<li>In the star-map promo example, what would have happened without root cause analysis?</li>
+<li>True or false: Alerts are one of the three pillars of observability.</li>
+</ol>
+<details class="answers"><summary>Show answers</summary>
+<ol>
+<li>Monitoring shows symptoms; observability explains them in context so you can act.</li>
+<li>Heart rate &gt; 120 BPM alert = monitoring (threshold). "Time to stand" or weekly sleep trend = observability (behavior/patterns interpreted into advice).</li>
+<li>Any three: separate installs, separate configuration, separate updates, separate licenses, context-switching between UIs, more time spent.</li>
+<li>Logs, metrics, traces, events, and more; download, install, and it starts automatically.</li>
+<li>Fewer firewall rules; secure one-way outbound traffic; scalable routing; central control over what leaves the network.</li>
+<li>Instead of each OneAgent "flying" its data to Dynatrace directly, they all hand it to a local ActiveGate that bundles, secures, and sends it.</li>
+<li>a) Metrics b) Logs c) Traces</li>
+<li>Security events, business events, deployment events.</li>
+<li>The team might have pulled a successful promotion instead of simply adding capacity.</li>
+<li>False — the pillars are metrics, logs, and traces.</li>
+</ol>
+</details>
+
+<div class="pager"><a href="index.html"><small>Previous</small>Home</a><a href="02-dynatrace-architecture.html" style="text-align:right"><small>Next</small>Dynatrace Architecture</a></div>
+<footer>Original study notes based on the Dynatrace University course "Dynatrace Essentials".</footer>
+</main>
+</div>
+</body>
+</html>
