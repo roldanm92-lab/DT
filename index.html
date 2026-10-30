@@ -3,11 +3,158 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dynatrace Essentials Notes</title>
-<meta http-equiv="refresh" content="0; url=docs/index.html">
-<link rel="canonical" href="docs/index.html">
+<title>DT · Dynatrace Essentials Study Hub</title>
+<link rel="stylesheet" href="learn/learn.css">
+<script src="learn/theme.js"></script>
 </head>
-<body>
-<p>Opening the study notes… If nothing happens, <a href="docs/index.html">go to the notes</a>.</p>
+<body class="home">
+<header class="site">
+  <a class="logo" href="index.html">DT</a>
+  <nav class="top">
+    <a href="docs/index.html">Notes</a>
+    <a href="learn/quiz.html">Quizzes</a>
+    <a href="learn/flashcards.html">Flashcards</a>
+    <a href="learn/drill.html">Scenario drill</a>
+    <button class="theme-btn" type="button" aria-label="Toggle theme"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg></button>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <p class="eyebrow">Dynatrace Essentials · Study hub</p>
+    <h1>Learn it, test it, lock it in.</h1>
+    <p class="lede">Notes for all 8 lessons, plus quizzes, flashcards, and a scenario drill to practise before the certificate exam. Your progress is saved in this browser.</p>
+    <div class="hero-actions">
+      <a class="btn primary" id="continue" href="docs/01-introduction-to-dynatrace.html">Start with Lesson 1</a>
+      <a class="btn" href="learn/quiz.html?mode=exam">Take a practice exam</a>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Your progress">
+    <div class="stat"><span class="v" id="st-quizzes">0/8</span><span class="k">lesson quizzes passed</span></div>
+    <div class="stat"><span class="v" id="st-exam">—</span><span class="k">best practice exam</span></div>
+    <div class="stat"><span class="v" id="st-cards">0</span><span class="k">flashcards known</span></div>
+    <div class="stat"><span class="v" id="st-drill">0</span><span class="k">best drill streak</span></div>
+  </section>
+
+  <section class="modes" aria-label="Ways to study">
+    <a class="mode" href="docs/index.html">
+      <span class="tag">Read</span>
+      <h2>Study notes</h2>
+      <p>Objectives, explanations, glossary, examples and review questions for every lesson.</p>
+    </a>
+    <a class="mode" href="learn/quiz.html">
+      <span class="tag">Test</span>
+      <h2>Quizzes</h2>
+      <p>Multiple choice per lesson with instant explanations, or a mixed 20-question practice exam.</p>
+    </a>
+    <a class="mode" href="learn/flashcards.html">
+      <span class="tag">Recall</span>
+      <h2>Flashcards</h2>
+      <p>Flip through every glossary term. Cards you miss come back until you know them.</p>
+    </a>
+    <a class="mode" href="learn/drill.html">
+      <span class="tag">Apply</span>
+      <h2>Scenario drill</h2>
+      <p>"Which tool would you use?" Rapid-fire situations — build a streak.</p>
+    </a>
+    <a class="mode" href="docs/09-cram-sheet-and-final-review.html">
+      <span class="tag">Review</span>
+      <h2>Cram sheet</h2>
+      <p>Every number to memorise, easily-confused pairs, and a 40-question final review.</p>
+    </a>
+  </section>
+
+  <section class="lessons-sec">
+    <h2 class="sec-title">Lessons</h2>
+    <ol class="lessons">
+<li class="lesson" data-id="01">
+  <span class="num">1</span>
+  <span class="ltitle">An Introduction to Dynatrace</span>
+  <span class="lactions">
+    <a href="docs/01-introduction-to-dynatrace.html">Notes</a>
+    <a href="learn/quiz.html?lesson=01">Quiz</a>
+    <a href="learn/flashcards.html?lesson=01">Cards</a>
+  </span>
+  <span class="score" data-score="01">—</span>
+</li>
+<li class="lesson" data-id="02">
+  <span class="num">2</span>
+  <span class="ltitle">Dynatrace Architecture</span>
+  <span class="lactions">
+    <a href="docs/02-dynatrace-architecture.html">Notes</a>
+    <a href="learn/quiz.html?lesson=02">Quiz</a>
+    <a href="learn/flashcards.html?lesson=02">Cards</a>
+  </span>
+  <span class="score" data-score="02">—</span>
+</li>
+<li class="lesson" data-id="03">
+  <span class="num">3</span>
+  <span class="ltitle">Dynatrace Topology (Smartscape)</span>
+  <span class="lactions">
+    <a href="docs/03-dynatrace-topology.html">Notes</a>
+    <a href="learn/quiz.html?lesson=03">Quiz</a>
+    <a href="learn/flashcards.html?lesson=03">Cards</a>
+  </span>
+  <span class="score" data-score="03">—</span>
+</li>
+<li class="lesson" data-id="04">
+  <span class="num">4</span>
+  <span class="ltitle">Digital Experience Monitoring (DEM)</span>
+  <span class="lactions">
+    <a href="docs/04-digital-experience-monitoring.html">Notes</a>
+    <a href="learn/quiz.html?lesson=04">Quiz</a>
+    <a href="learn/flashcards.html?lesson=04">Cards</a>
+  </span>
+  <span class="score" data-score="04">—</span>
+</li>
+<li class="lesson" data-id="05">
+  <span class="num">5</span>
+  <span class="ltitle">Smart Organization</span>
+  <span class="lactions">
+    <a href="docs/05-smart-organization.html">Notes</a>
+    <a href="learn/quiz.html?lesson=05">Quiz</a>
+    <a href="learn/flashcards.html?lesson=05">Cards</a>
+  </span>
+  <span class="score" data-score="05">—</span>
+</li>
+<li class="lesson" data-id="06">
+  <span class="num">6</span>
+  <span class="ltitle">Exploring Problems</span>
+  <span class="lactions">
+    <a href="docs/06-exploring-problems.html">Notes</a>
+    <a href="learn/quiz.html?lesson=06">Quiz</a>
+    <a href="learn/flashcards.html?lesson=06">Cards</a>
+  </span>
+  <span class="score" data-score="06">—</span>
+</li>
+<li class="lesson" data-id="07">
+  <span class="num">7</span>
+  <span class="ltitle">Analyzing Your Observability Data</span>
+  <span class="lactions">
+    <a href="docs/07-analyzing-observability-data.html">Notes</a>
+    <a href="learn/quiz.html?lesson=07">Quiz</a>
+    <a href="learn/flashcards.html?lesson=07">Cards</a>
+  </span>
+  <span class="score" data-score="07">—</span>
+</li>
+<li class="lesson" data-id="08">
+  <span class="num">8</span>
+  <span class="ltitle">Extending Dynatrace</span>
+  <span class="lactions">
+    <a href="docs/08-extending-dynatrace.html">Notes</a>
+    <a href="learn/quiz.html?lesson=08">Quiz</a>
+    <a href="learn/flashcards.html?lesson=08">Cards</a>
+  </span>
+  <span class="score" data-score="08">—</span>
+</li>
+    </ol>
+    <p class="reset-row"><button type="button" class="linkish" id="reset">Reset my progress</button></p>
+  </section>
+</main>
+<footer class="site-foot">Original study notes and practice material based on the Dynatrace University course "Dynatrace Essentials".</footer>
+<script src="learn/data.js"></script>
+<script src="learn/store.js"></script>
+<script src="learn/home.js"></script>
 </body>
 </html>

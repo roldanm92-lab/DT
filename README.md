@@ -1,12 +1,19 @@
-# Dynatrace Essentials — Study Notes
+# DT — Dynatrace Essentials Study Hub
 
-Original study notes for the Dynatrace University course *Dynatrace Essentials*, published as a small static website.
+A study site for the Dynatrace University course *Dynatrace Essentials*: notes for all 8 lessons plus interactive practice. Live at **https://roldanm92-lab.github.io/DT/**.
 
-- `notes/` — the source notes in Markdown (edit these)
-- `docs/` — the generated HTML site (don't edit by hand)
-- `build.py` — turns `notes/` into `docs/` (`pip install markdown`, then `python3 build.py`)
-- `publish.sh` — rebuilds the site, commits, and pushes
+## What's on the site
+- **Homepage** (`index.html`): progress overview and links to everything
+- **Study notes** (`docs/`): objectives, explanations, glossary, examples and review questions per lesson, plus a cram sheet
+- **Quizzes** (`learn/quiz.html`): multiple choice per lesson with explanations, and a random 20-question practice exam
+- **Flashcards** (`learn/flashcards.html`): every glossary term; missed cards come back until learned
+- **Scenario drill** (`learn/drill.html`): "which tool would you use?" with a streak counter
 
-Open `docs/index.html` in a browser to read locally. To host it, enable GitHub Pages for this repo with **Source: Deploy from a branch → `main` / `/docs`**.
+Progress (quiz scores, known cards, best streak) is saved in your browser only.
 
-Each lesson page has learning objectives, explanations, a glossary, practical examples, the concepts the lesson quiz checks, and review questions with collapsible answers. Page 9 is a cram sheet and 40-question final review.
+## Editing
+- Notes: edit Markdown in `notes/`. Flashcards come from each lesson's *Definitions (glossary)* section; scenarios come from the cram sheet's *which one?* table.
+- Quiz questions: edit `content/quizzes.json` (`answer` is the 0-based index of the correct option).
+- Don't edit generated files by hand: `index.html`, `docs/*.html`, `learn/data.js`.
+
+Then run `./publish.sh "what changed"` to rebuild and push (`pip install markdown` first).

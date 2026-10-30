@@ -90,6 +90,7 @@ a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
 nav.side{border-right:1px solid var(--border);background:var(--surface);
   padding:24px 16px;position:sticky;top:0;height:100vh;overflow:auto}
 nav.side .brand{font-weight:700;font-size:15px;margin:0 8px 16px;color:var(--text)}
+nav.side .home-link{display:block;font-weight:500;font-size:13px;color:var(--accent);margin-bottom:10px}
 nav.side ol{list-style:none;margin:0;padding:0}
 nav.side li a{display:flex;gap:10px;padding:7px 8px;border-radius:6px;
   color:var(--muted);font-size:14px;line-height:1.35}
@@ -166,7 +167,8 @@ def page(title, nav_html, body, pager):
 <body>
 <div class="layout">
 <nav class="side" aria-label="Lessons">
-<div class="brand">Dynatrace Essentials Notes</div>
+<a class="brand home-link" href="../index.html">← DT Home</a>
+<div class="brand">Study Notes</div>
 {nav_html}
 </nav>
 <main>
@@ -217,6 +219,9 @@ def main():
     (OUT / "style.css").write_text(CSS.strip() + "\n", encoding="utf-8")
     (OUT / ".nojekyll").write_text("", encoding="utf-8")
     print(f"Built {len(pages)} pages into {OUT}")
+
+    import build_learn
+    build_learn.main()
 
 
 if __name__ == "__main__":

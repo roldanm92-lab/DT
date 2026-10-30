@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flashcards · DT</title>
+<link rel="stylesheet" href="learn.css">
+<script src="theme.js"></script>
+</head>
+<body>
+<header class="site">
+  <a class="logo" href="../index.html">DT</a>
+  <nav class="top">
+    <a href="../docs/index.html">Notes</a>
+    <a href="quiz.html">Quizzes</a>
+    <a href="flashcards.html" class="active">Flashcards</a>
+    <a href="drill.html">Scenario drill</a>
+    <button class="theme-btn" type="button" aria-label="Toggle theme"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg></button>
+  </nav>
+</header>
+<main class="wrap narrow">
+  <div class="page-head">
+    <h1>Flashcards</h1>
+    <p>Every glossary term from the notes. Tap a card to flip it. Cards you mark "Again" come back later in the round.</p>
+  </div>
+  <div class="picker" id="picker" role="group" aria-label="Choose a deck"></div>
+  <div id="stage"></div>
+</main>
+<script src="data.js"></script>
+<script src="store.js"></script>
+<script src="flashcards.js"></script>
+</body>
+</html>
