@@ -142,7 +142,58 @@ footer.site-foot{max-width:1040px;margin:0 auto;padding:0 24px 40px;color:var(--
   text-transform:uppercase;color:var(--muted)}
 .face .term{font-size:28px;font-weight:700;line-height:1.25}
 .face .def{font-size:18px;line-height:1.5}
-@media (prefers-reduced-motion: reduce){.flip-inner,.bar>i,.mode{transition:none}}
+@media (prefers-reduced-motion: reduce){.flip-inner,.bar>i,.mode{transition:none}.gterm.flash{animation:none}}
+
+/* Glossary + search */
+.search-box{position:relative;display:flex;align-items:center;margin:8px 0 4px}
+.search-box input{width:100%;font:inherit;font-size:17px;padding:13px 44px 13px 44px;
+  border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.search-box input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search-box input::-webkit-search-cancel-button{cursor:pointer}
+.search-icon{position:absolute;left:15px;color:var(--muted);pointer-events:none}
+.kbd{position:absolute;right:12px;font:12px/1 ui-monospace,monospace;color:var(--muted);
+  border:1px solid var(--border);border-radius:4px;padding:3px 6px;background:var(--surface-2)}
+.search-box input:focus ~ .kbd,.search-box input:not(:placeholder-shown) ~ .kbd{display:none}
+.az{display:flex;flex-wrap:wrap;gap:2px;margin:0 0 8px}
+.az a,.az span{width:28px;height:28px;display:grid;place-items:center;border-radius:6px;font-size:13px;font-weight:600}
+.az a:hover{background:var(--accent-soft);text-decoration:none}
+.az span{color:var(--border)}
+.az[hidden]{display:none}
+.count{color:var(--muted);font-size:13px;margin:4px 0 12px}
+.gletter{font-size:15px;color:var(--accent);margin:22px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--border);scroll-margin-top:76px}
+.gsec{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:22px 0 10px}
+.gterm{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;
+  box-shadow:var(--shadow);scroll-margin-top:76px}
+.gterm.flash{animation:gflash 1.4s ease-out}
+@keyframes gflash{0%{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}100%{}}
+.ghead{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 10px}
+.ghead h3{margin:0;font-size:18px}
+.ganchor{color:var(--text)}
+.gbadge{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);
+  background:var(--accent-soft);padding:2px 8px;border-radius:999px}
+.gvia{margin:4px 0 0;font-size:12px;color:var(--muted)}
+.gdef{margin:8px 0 0;line-height:1.55}
+.gfrom{font-size:12px;font-weight:600;color:var(--muted);margin-right:2px}
+.gfoot{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:13px}
+.glinks{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.glabel{color:var(--muted)}
+.gchip{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:1px 9px;background:var(--surface);
+  color:var(--accent);font-size:13px;cursor:pointer}
+.gchip:hover{border-color:var(--accent);text-decoration:none}
+mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
+:root{--mark:rgba(255,196,0,.35)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--mark:rgba(122,167,255,.32)}}
+:root[data-theme="dark"]{--mark:rgba(122,167,255,.32)}
+.nres{display:grid;gap:8px;margin-bottom:12px}
+.nhit{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text)}
+.nhit:hover{border-color:var(--accent);text-decoration:none}
+.nhit.more{display:none}
+.nwhere{display:block;font-size:12px;color:var(--muted)}
+.nhead{display:block;font-weight:600;margin:2px 0 4px}
+.nsnip{display:block;font-size:14px;color:var(--muted);line-height:1.5}
+.gempty .gtry{margin:12px 0 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;color:var(--muted);font-size:14px}
+.home-search{margin:0 0 28px;max-width:620px}
+.home-search .search-box{margin:0}
 
 /* Drill */
 .streak{font-variant-numeric:tabular-nums;font-weight:700}
@@ -166,4 +217,8 @@ footer.site-foot{max-width:1040px;margin:0 auto;padding:0 24px 40px;color:var(--
   .face .term{font-size:23px}
   .face .def{font-size:16px}
   .scenario{font-size:19px}
+  .search-box input{font-size:16px}
+  .kbd{display:none}
+  .az a,.az span{width:24px;height:26px;font-size:12px}
+  .gterm{padding:12px 14px}
 }

@@ -12,6 +12,7 @@
   <a class="logo" href="index.html">DT</a>
   <nav class="top">
     <a href="docs/index.html">Notes</a>
+    <a href="learn/glossary.html">Glossary</a>
     <a href="learn/quiz.html">Quizzes</a>
     <a href="learn/flashcards.html">Flashcards</a>
     <a href="learn/drill.html">Scenario drill</a>
@@ -30,6 +31,13 @@
     </div>
   </section>
 
+  <form class="home-search" action="learn/glossary.html" method="get" role="search">
+    <div class="search-box">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input name="q" type="search" autocomplete="off" placeholder="Look up a term — e.g. Apdex, XHR, Grail" aria-label="Search the glossary">
+    </div>
+  </form>
+
   <section class="stats" aria-label="Your progress">
     <div class="stat"><span class="v" id="st-quizzes">0/8</span><span class="k">lesson quizzes passed</span></div>
     <div class="stat"><span class="v" id="st-exam">—</span><span class="k">best practice exam</span></div>
@@ -42,6 +50,11 @@
       <span class="tag">Read</span>
       <h2>Study notes</h2>
       <p>Objectives, explanations, glossary, examples and review questions for every lesson.</p>
+    </a>
+    <a class="mode" href="learn/glossary.html">
+      <span class="tag">Look up</span>
+      <h2>Glossary</h2>
+      <p>Search every Dynatrace term from the course, with links to where it's covered in the notes.</p>
     </a>
     <a class="mode" href="learn/quiz.html">
       <span class="tag">Test</span>

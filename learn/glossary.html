@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary · DT</title>
+<link rel="stylesheet" href="learn.css">
+<script src="theme.js"></script>
+</head>
+<body>
+<header class="site">
+  <a class="logo" href="../index.html">DT</a>
+  <nav class="top">
+    <a href="../docs/index.html">Notes</a>
+    <a href="glossary.html" class="active">Glossary</a>
+    <a href="quiz.html">Quizzes</a>
+    <a href="flashcards.html">Flashcards</a>
+    <a href="drill.html">Scenario drill</a>
+    <button class="theme-btn" type="button" aria-label="Toggle theme"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg></button>
+  </nav>
+</header>
+<main class="wrap narrow">
+  <div class="page-head">
+    <h1>Glossary</h1>
+    <p id="intro">Look up any Dynatrace term from the course — by name, abbreviation, or a word from its meaning.</p>
+  </div>
+
+  <div class="search-box" role="search">
+    <svg class="search-icon" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <input id="q" type="search" autocomplete="off" spellcheck="false"
+           placeholder="Search terms — e.g. Apdex, XHR, baseline, Davis" aria-label="Search the glossary and notes">
+    <kbd class="kbd" aria-hidden="true">/</kbd>
+  </div>
+
+  <div class="picker" id="lessons" role="group" aria-label="Filter by lesson"></div>
+  <nav class="az" id="az" aria-label="Jump to letter"></nav>
+
+  <p class="count" id="count" aria-live="polite"></p>
+  <div id="results"></div>
+</main>
+<script src="search-data.js"></script>
+<script src="store.js"></script>
+<script src="glossary.js"></script>
+</body>
+</html>

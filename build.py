@@ -168,6 +168,7 @@ def page(title, nav_html, body, pager):
 <div class="layout">
 <nav class="side" aria-label="Lessons">
 <a class="brand home-link" href="../index.html">← DT Home</a>
+<a class="brand home-link" href="../learn/glossary.html">Search the glossary</a>
 <div class="brand">Study Notes</div>
 {nav_html}
 </nav>
